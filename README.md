@@ -1,4 +1,4 @@
-# Advanced Marketing Modeling 2018
+# Numerical Introductory Seminar 2018
 
 ## Getting started with Python
 To run the `Python` code from this repository you may need to install additional modules. You can do this by opening a terminal (`CTRL-ALT-T` on `Linux` or `MacOS`) or a command line (on `Windows` just push `HOME` and start typing `run`, you should see a black icon).
