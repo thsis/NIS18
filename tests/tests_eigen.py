@@ -2,11 +2,11 @@
 Automated tests for different algorithms.
 
 Test diagonalization of 2D matrices.
-Test diagonalization of 3D matrices.
-Test diagonalization of arbitrary matrices.
+Test Computation of eigenvalues of arbitrary matrices.
 """
 import numpy as np
 from algorithms import eigen
+from tqdm import tqdm
 
 
 def getSymmetricMatrix(dist=np.random.uniform, shape=(2, 2), **kwargs):
@@ -29,7 +29,7 @@ def getAlmostDiagonal(dist=np.random.uniform, shape=(2, 2), **kwargs):
 def testDiagonal(Ntests, precision=1e-12):
     passed = 0
     critically = 0
-    for _ in range(Ntests):
+    for _ in tqdm(range(Ntests)):
         X = getSymmetricMatrix()
         E = eigen.jacobi2x2(X)
         try:
@@ -52,19 +52,17 @@ def testDiagonal(Ntests, precision=1e-12):
 def testEigen(fun, Ntests):
     wrongValues, critical = 0, 0
     shenanigans = []
-    for _ in range(Ntests):
-        n = np.random.randint(3, 10)
+    for _ in tqdm(range(Ntests)):
+        n = np.random.randint(3, 50)
         X = getSymmetricMatrix(shape=(n, n))
-        myEigenVal, myEigenVec = fun(X)
+        myEigenVal, _ = fun(X)
 
-        trueEigenVal, trueEigenVec = np.linalg.eig(X)
+        trueEigenVal, _ = np.linalg.eig(X)
         order = np.abs(trueEigenVal).argsort()[::-1]
         trueEigenVal = trueEigenVal[order]
-        trueEigenVec = trueEigenVec[:, order]
 
         # Test Eigenvalues:
         testedValues = all(np.isclose(myEigenVal, trueEigenVal))
-
         try:
             assert testedValues
         except AssertionError:
