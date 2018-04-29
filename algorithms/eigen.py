@@ -35,29 +35,39 @@ def jacobi2x2(A):
     return E
 
 
-def jacobi(X, precision=1e-20):
+def jacobi(X, precision=1e-6):
+    """
+    Compute Eigenvalues and Eigenvectors for symmetric matrices.
+
+    Parameters:
+        X - 2D numpy ndarray which represents a symmetric matrix
+        precision - float in (0, 1). Convergence criterion.
+
+    Returns:
+        A - 1D numpy array with eigenvalues sorted by absolute value
+        U - 2D numpy array with associated eigenvectors (column).
+    """
+    assert 0 < precision < 1.
     assert type(X) == np.ndarray
     assert all((X - X.T == 0).flatten())
     A = copy.deepcopy(X)
+    U = np.eye(A.shape[0])
+    L = np.array([1])
 
-    while not isDiagonal(A, precision=precision):
-        L = np.tril(A, k=0) - np.diag(A.diagonal())
+    while L.max() > precision:
+        L = np.abs(np.tril(A, k=0) - np.diag(A.diagonal()))
         i, j = np.unravel_index(L.argmax(), L.shape)
         alpha = 0.5 * np.arctan(2*A[i, j] / (A[i, i]-A[j, j]))
-        U, V = np.eye(A.shape[0]), np.eye(A.shape[0])
+
+        V = np.eye(A.shape[0])
         V[i, i], V[j, j] = np.cos(alpha), np.cos(alpha)
         V[i, j], V[j, i] = -np.sin(alpha), np.sin(alpha)
 
-        A = np.matmul(V.T, np.matmul(A, V))
-        U = np.matmul(U, V)
+        A = np.dot(V.T, A.dot(V))
+        U = U.dot(V)
 
-    return A, U
+    # Sort by eigenvalue (descending order) and flatten A
+    A = np.diag(A)
+    order = np.abs(A).argsort()[::-1]
 
-
-X = np.array([[1, 0, 0], [0, 1, 2], [0, 2, 4]])
-A, U = jacobi(X)
-a, u = np.linalg.eig(X)
-A
-a
-U
-u
+    return A[order], U[:, order]
