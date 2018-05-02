@@ -6,6 +6,7 @@ Algorithms for solving eigenvalue problems.
 """
 import numpy as np
 import copy
+from algorithms import helpers
 
 
 def isDiagonal(X, precision=1e-15):
@@ -71,3 +72,30 @@ def jacobi(X, precision=1e-6):
     order = np.abs(A).argsort()[::-1]
 
     return A[order], U[:, order]
+
+
+def qrm(X):
+    """
+    Compute Eigenvalues and Eigenvectors using the QR-Method.
+
+    Parameters:
+        - X: square numpy ndarray.
+    Returns:
+        - Eigenvalues of A.
+        - Eigenvectors of A.
+    """
+    n, m = X.shape
+    assert n == m
+
+    A = copy.deepcopy(X)
+    conv = False
+
+    while not conv:
+        Q, R = helpers.qr_factorize(A)
+        A = np.dot(Q.T, A).dot(Q)
+
+        conv = all(np.isclose(np.abs(Q), np.eye(n)).flatten())
+
+    Evals = A.diagonal()
+    order = np.abs(Evals).argsort()
+    return Evals[order], True

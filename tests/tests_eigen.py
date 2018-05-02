@@ -9,7 +9,8 @@ from algorithms import eigen
 from tqdm import tqdm
 
 
-def getSymmetricMatrix(dist=np.random.uniform, shape=(2, 2), **kwargs):
+def getSymmetricMatrix(dist=np.random.uniform,
+                       shape=(2, 2), **kwargs):
     "Create random symmetric matrix for test purposes."
     X = dist(size=shape, **kwargs)
 
@@ -86,4 +87,6 @@ def testEigen(fun, Ntests):
 # Test: Jacobi Diagonalization of 2x2 Matrices.
 assert testDiagonal(1000, 1e-10)
 # Test: Jacobi Computation of Eigenvalues/Eigenvectors.
-test, shenanigans = testEigen(eigen.jacobi, 1000)
+test_jacobi, failed_jacobi = testEigen(eigen.jacobi, 1000)
+# Test: QR-Method for Eigenvalues.
+test_qr, failed_qr = testEigen(eigen.qrm, 1000)
