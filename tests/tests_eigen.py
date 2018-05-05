@@ -5,6 +5,7 @@ Test diagonalization of 2D matrices.
 Test Computation of eigenvalues of arbitrary matrices.
 """
 import numpy as np
+import threading
 from algorithms import eigen
 from tqdm import tqdm
 
@@ -17,7 +18,8 @@ def getSymmetricMatrix(dist=np.random.uniform,
     return X + X.T
 
 
-def getAlmostDiagonal(dist=np.random.uniform, shape=(2, 2), **kwargs):
+def getAlmostDiagonal(dist=np.random.uniform, shape=(2, 2),
+                      **kwargs):
     "Create random symmetric matrix, that is already close to a diagonal."
     X = np.eye(N=shape[0])
     i, j = np.random.randint(0, shape[0])
@@ -50,13 +52,13 @@ def testDiagonal(Ntests, precision=1e-12):
         return False
 
 
-def testEigen(fun, Ntests):
+def testEigen(fun, Ntests, *args, **kwargs):
     wrongValues, critical = 0, 0
     shenanigans = []
     for _ in tqdm(range(Ntests)):
-        n = np.random.randint(3, 50)
+        n = np.random.randint(3, 5)
         X = getSymmetricMatrix(shape=(n, n))
-        myEigenVal, _ = fun(X)
+        myEigenVal, _ = fun(X, *args, **kwargs)
 
         trueEigenVal, _ = np.linalg.eig(X)
         order = np.abs(trueEigenVal).argsort()[::-1]
@@ -68,7 +70,8 @@ def testEigen(fun, Ntests):
             assert testedValues
         except AssertionError:
             print("Encountered Error:")
-            print(X)
+            print("Custom Eigenvalues: {}".format(myEigenVal))
+            print("Numpy Eigenvalues: {}".format(trueEigenVal))
             shenanigans.append(X)
             wrongValues += 1
         except ZeroDivisionError:
@@ -85,8 +88,20 @@ def testEigen(fun, Ntests):
 
 # Tests
 # Test: Jacobi Diagonalization of 2x2 Matrices.
-assert testDiagonal(1000, 1e-10)
+assert testDiagonal(100, 1e-10)
 # Test: Jacobi Computation of Eigenvalues/Eigenvectors.
-test_jacobi, failed_jacobi = testEigen(eigen.jacobi, 1000)
+test_jacobi, failed_jacobi = testEigen(eigen.jacobi, 100)
+assert test_jacobi
 # Test: QR-Method for Eigenvalues.
-test_qr, failed_qr = testEigen(eigen.qrm, 1000)
+test_qr, failed_qr = testEigen(eigen.qrm2, 100, maxiter=5000)
+
+thread0 = threading.Thread(target=testEigen, args=(eigen.jacobi, 10)).start()
+thread1 = threading.Thread(target=testEigen, args=(eigen.jacobi, 10)).start()
+thread2 = threading.Thread(target=testEigen, args=(eigen.jacobi, 10)).start()
+thread3 = threading.Thread(target=testEigen, args=(eigen.jacobi, 10)).start()
+thread4 = threading.Thread(target=testEigen, args=(eigen.jacobi, 10)).start()
+thread5 = threading.Thread(target=testEigen, args=(eigen.jacobi, 10)).start()
+thread6 = threading.Thread(target=testEigen, args=(eigen.jacobi, 10)).start()
+thread7 = threading.Thread(target=testEigen, args=(eigen.jacobi, 10)).start()
+thread8 = threading.Thread(target=testEigen, args=(eigen.jacobi, 10)).start()
+thread9 = threading.Thread(target=testEigen, args=(eigen.jacobi, 10)).start()

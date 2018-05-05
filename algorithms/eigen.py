@@ -6,6 +6,8 @@ Algorithms for solving eigenvalue problems.
 """
 import numpy as np
 import copy
+import warnings
+from scipy import linalg as lin
 from algorithms import helpers
 
 
@@ -74,7 +76,7 @@ def jacobi(X, precision=1e-6):
     return A[order], U[:, order]
 
 
-def qrm(X):
+def qrm(X, maxiter=50):
     """
     Compute Eigenvalues and Eigenvectors using the QR-Method.
 
@@ -87,15 +89,56 @@ def qrm(X):
     n, m = X.shape
     assert n == m
 
+    # First stage: transform to upper Hessenberg-matrix.
     A = copy.deepcopy(X)
     conv = False
+    k = 0
 
-    while not conv:
+    # Second stage: perform QR-transformations.
+    while (not conv) and (k < maxiter):
+        k += 1
         Q, R = helpers.qr_factorize(A)
         A = np.dot(Q.T, A).dot(Q)
 
-        conv = all(np.isclose(np.abs(Q), np.eye(n)).flatten())
+        conv = all(np.isclose(np.tril(A, k=-1), np.zeros((n, n))).flatten())
+
+    if not conv:
+        warnings.warn("Convergence was not reached. Consider raising maxiter.")
 
     Evals = A.diagonal()
-    order = np.abs(Evals).argsort()
-    return Evals[order], True
+    order = np.abs(Evals).argsort()[::-1]
+    return Evals[order], conv
+
+
+def qrm2(X, maxiter=50):
+    """
+    Compute Eigenvalues and Eigenvectors using the QR-Method.
+
+    Parameters:
+        - X: square numpy ndarray.
+    Returns:
+        - Eigenvalues of A.
+        - Eigenvectors of A.
+    """
+    n, m = X.shape
+    assert n == m
+
+    # First stage: transform to upper Hessenberg-matrix.
+    A = lin.hessenberg(X)
+    conv = False
+    k = 0
+
+    # Second stage: perform QR-transformations.
+    while (not conv) and (k < maxiter):
+        k += 1
+        Q, R = helpers.qr_factorize(A)
+        A = np.dot(Q.T, A).dot(Q)
+
+        conv = all(np.isclose(np.tril(A, k=-1), np.zeros((n, n))).flatten())
+
+    if not conv:
+        warnings.warn("Convergence was not reached. Consider raising maxiter.")
+
+    Evals = A.diagonal()
+    order = np.abs(Evals).argsort()[::-1]
+    return Evals[order], conv

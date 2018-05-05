@@ -34,16 +34,3 @@ def test_QR(Ntests):
 
 
 assert test_QR(1000)
-
-A = np.array([[2, 4, 2],
-              [-1, 0, -4],
-              [2, 2, -1]])
-Q, R = helpers.qr_factorize(A)
-Q
-np.round(R)
-np.round(Q.T.dot(Q))
-A1 = np.dot(Q.T, A).dot(Q)
-Q1, R1 = helpers.qr_factorize(A1)
-A2 = np.dot(Q1.T, A1).dot(Q1)
-A2sym = A2 + A2.T
-np.tril(A2sym) == np.triu(A2sym).T
