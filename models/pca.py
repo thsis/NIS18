@@ -18,7 +18,7 @@ from matplotlib import pyplot as plt
 from algorithms import eigen
 
 
-class PCA():
+class PCA(object):
     def __init__(self):
         self.data = None
         self.rotated_data = None

@@ -52,7 +52,9 @@ def jacobi(X, precision=1e-6):
     """
     assert 0 < precision < 1.
     assert type(X) == np.ndarray
-    assert all((X - X.T == 0).flatten())
+    n, m = X.shape
+    assert n == m
+    assert all(np.isclose(X - X.T, np.zeros(n)).flatten())
     A = copy.deepcopy(X)
     U = np.eye(A.shape[0])
     L = np.array([1])
