@@ -8,6 +8,7 @@ import numpy as np
 import threading
 from algorithms import eigen
 from tqdm import tqdm
+from scipy.stats import ortho_group
 
 
 def getSymmetricMatrix(dist=np.random.uniform,
@@ -87,21 +88,62 @@ def testEigen(fun, Ntests, *args, **kwargs):
 
 
 # Tests
-# Test: Jacobi Diagonalization of 2x2 Matrices.
-assert testDiagonal(100, 1e-10)
 # Test: Jacobi Computation of Eigenvalues/Eigenvectors.
 test_jacobi, failed_jacobi = testEigen(eigen.jacobi, 100)
 assert test_jacobi
 # Test: QR-Method for Eigenvalues.
-test_qr, failed_qr = testEigen(eigen.qrm2, 100, maxiter=5000)
+test_qr, failed_qr = testEigen(eigen.qrm2, 1000, maxiter=5000)
 
-thread0 = threading.Thread(target=testEigen, args=(eigen.jacobi, 10)).start()
-thread1 = threading.Thread(target=testEigen, args=(eigen.jacobi, 10)).start()
-thread2 = threading.Thread(target=testEigen, args=(eigen.jacobi, 10)).start()
-thread3 = threading.Thread(target=testEigen, args=(eigen.jacobi, 10)).start()
-thread4 = threading.Thread(target=testEigen, args=(eigen.jacobi, 10)).start()
-thread5 = threading.Thread(target=testEigen, args=(eigen.jacobi, 10)).start()
-thread6 = threading.Thread(target=testEigen, args=(eigen.jacobi, 10)).start()
-thread7 = threading.Thread(target=testEigen, args=(eigen.jacobi, 10)).start()
-thread8 = threading.Thread(target=testEigen, args=(eigen.jacobi, 10)).start()
-thread9 = threading.Thread(target=testEigen, args=(eigen.jacobi, 10)).start()
+thread0 = threading.Thread(target=testEigen, args=(eigen.jacobi, 100)).start()
+thread1 = threading.Thread(target=testEigen, args=(eigen.jacobi, 100)).start()
+thread2 = threading.Thread(target=testEigen, args=(eigen.jacobi, 100)).start()
+thread3 = threading.Thread(target=testEigen, args=(eigen.jacobi, 100)).start()
+thread4 = threading.Thread(target=testEigen, args=(eigen.jacobi, 100)).start()
+thread5 = threading.Thread(target=testEigen, args=(eigen.jacobi, 100)).start()
+thread6 = threading.Thread(target=testEigen, args=(eigen.jacobi, 100)).start()
+thread7 = threading.Thread(target=testEigen, args=(eigen.jacobi, 100)).start()
+thread8 = threading.Thread(target=testEigen, args=(eigen.jacobi, 100)).start()
+thread9 = threading.Thread(target=testEigen, args=(eigen.jacobi, 100)).start()
+
+
+def get_test_matrix(dim):
+    """Return matrix with assosiated Eigenvalues."""
+    eigenvalues = np.random.uniform(size=dim)
+    eigenvectors = ortho_group.rvs(dim=dim)
+    Lambda = np.diag(eigenvalues)
+
+    matrix = np.dot(eigenvectors, Lambda).dot(eigenvectors.T)
+
+    order = np.abs(eigenvalues).argsort()[::-1]
+    return matrix, eigenvalues[order]
+
+
+def testEigenAlgorithm(algo, Ntests=1000, dim=3, *args, **kwargs):
+    failed = 0
+    critical = 0
+    shenanigans = []
+    for _ in tqdm(range(Ntests)):
+        try:
+            A, true_eig = get_test_matrix(dim=dim)
+            my_eig, _ = algo(A, *args, **kwargs)
+            assert all(np.isclose(my_eig, true_eig).flatten())
+        except AssertionError:
+            failed += 1
+            shenanigans.append(A)
+            print("Encountered Error")
+        except ZeroDivisionError:
+            critical += 1
+
+    print("{} out of {} tests failed.".format(failed, Ntests))
+    print("{} tests failed critically.".format(critical))
+
+    if failed == 0:
+        return True, shenanigans
+    else:
+        return False, shenanigans
+
+
+res, bogus = testEigenAlgorithm(eigen.qrm2, dim=5, maxiter=10000)
+
+
+res2, bogus2 = testEigenAlgorithm(eigen.qrm2, maxiter=5000)

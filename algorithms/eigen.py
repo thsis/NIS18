@@ -11,11 +11,6 @@ from scipy import linalg as lin
 from algorithms import helpers
 
 
-def isDiagonal(X, precision=1e-15):
-    nonZeros = np.abs(X - np.diag(X.diagonal())).sum()
-    return nonZeros < precision
-
-
 def jacobi2x2(A):
     """
     Diagonalize a 2x2 matrix through jacobi step.
@@ -78,7 +73,7 @@ def jacobi(X, precision=1e-6):
     return A[order], U[:, order]
 
 
-def qrm(X, maxiter=50):
+def qrm(X, maxiter=5000):
     """
     Compute Eigenvalues and Eigenvectors using the QR-Method.
 
@@ -100,7 +95,7 @@ def qrm(X, maxiter=50):
     while (not conv) and (k < maxiter):
         k += 1
         Q, R = helpers.qr_factorize(A)
-        A = np.dot(Q.T, A).dot(Q)
+        A = R.dot(Q)
 
         conv = all(np.isclose(np.tril(A, k=-1), np.zeros((n, n))).flatten())
 
@@ -112,7 +107,7 @@ def qrm(X, maxiter=50):
     return Evals[order], conv
 
 
-def qrm2(X, maxiter=50):
+def qrm2(X, maxiter=5000):
     """
     Compute Eigenvalues and Eigenvectors using the QR-Method.
 
@@ -134,7 +129,7 @@ def qrm2(X, maxiter=50):
     while (not conv) and (k < maxiter):
         k += 1
         Q, R = helpers.qr_factorize(A)
-        A = np.dot(Q.T, A).dot(Q)
+        A = R.dot(Q)
 
         conv = all(np.isclose(np.tril(A, k=-1), np.zeros((n, n))).flatten())
 
