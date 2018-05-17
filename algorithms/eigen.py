@@ -109,7 +109,8 @@ def qrm(X, maxiter=5000):
 
 def qrm2(X, maxiter=5000):
     """
-    Compute Eigenvalues and Eigenvectors using the QR-Method.
+    First compute similar matrix in Hessenberg form, then compute the
+    Eigenvalues and Eigenvectors using the QR-Method.
 
     Parameters:
         - X: square numpy ndarray.
@@ -137,5 +138,41 @@ def qrm2(X, maxiter=5000):
         warnings.warn("Convergence was not reached. Consider raising maxiter.")
 
     Evals = A.diagonal()
+    order = np.abs(Evals).argsort()[::-1]
+    return Evals[order], conv
+
+
+def qrm3(X, maxiter=5000):
+    """
+    First compute similar matrix in Hessenberg form, then compute the
+    Eigenvalues and Eigenvectors using the QR-Method.
+
+    Parameters:
+        - X: square numpy ndarray.
+    Returns:
+        - Eigenvalues of A.
+        - Eigenvectors of A.
+    """
+    n, m = X.shape
+    assert n == m
+
+    # First stage: transform to upper Hessenberg-matrix.
+    T = lin.hessenberg(X)
+
+    conv = False
+    k = 0
+
+    # Second stage: perform QR-transformations.
+    while (not conv) and (k < maxiter):
+        k += 1
+        Q, R = helpers.qr_factorize(T - T[n-1, n-1] * np.eye(n))
+        T = R.dot(Q) + T[n-1, n-1] * np.eye(n)
+
+        conv = np.alltrue(np.isclose(np.tril(T, k=-1), np.zeros((n, n))))
+
+    if not conv:
+        warnings.warn("Convergence was not reached. Consider raising maxiter.")
+
+    Evals = T.diagonal()
     order = np.abs(Evals).argsort()[::-1]
     return Evals[order], conv

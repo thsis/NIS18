@@ -144,6 +144,62 @@ def testEigenAlgorithm(algo, Ntests=1000, dim=3, *args, **kwargs):
 
 
 res, bogus = testEigenAlgorithm(eigen.qrm2, dim=5, maxiter=10000)
-
-
 res2, bogus2 = testEigenAlgorithm(eigen.qrm2, maxiter=5000)
+res3, bogus3 = testEigenAlgorithm(eigen.qrm3)
+res, bogus = testEigenAlgorithm(eigen.qrm3, Ntests=5000, maxiter=10000)
+
+
+def test_algo(algo, Ntests=1000, dim=3, *args, **kwargs):
+    """
+    Test routine that allows for threading. Note that the variables:
+    failed, critical and problematic need to be defined in the enveloping or
+    global scope beforehand.
+
+    Parameters:
+        - algo: algorithm to be tested
+        - Ntests: number of tests to compute
+        - dim: dimensions of matrix
+        - *args, **kwargs: additional arguments to be passed to algo.
+
+    Returns:
+        - None, but will update the variables failed, critical and problematic.
+            + failed: number of failed tests
+            + critical: number of ZeroDivisionErrors
+            + problematic: list of numpy arrays which led to wrong eigenvalues.
+    """
+    global failed
+    global critical
+    global problematic
+
+    for _ in tqdm(range(Ntests)):
+        try:
+            A, true_eig = get_test_matrix(dim=dim)
+            my_eig, _ = algo(A, *args, **kwargs)
+            assert np.alltrue(np.isclose(my_eig, true_eig))
+        except AssertionError:
+            failed += 1
+            problematic.append(A)
+        except ZeroDivisionError:
+            critical += 1
+
+
+def threaded_tests(algo, N, nWorkers=10, *args, **kwargs):
+    assert N % nWorkers == 0
+
+    n = N // nWorkers
+
+    failed = 0
+    critical = 0
+    problematic = 0
+
+    threadlist = [None] * nWorkers
+
+    for i in range(nWorkers):
+        threadlist[i] = threading.Thread(target=test_algo, args=(algo, n, ))
+        threadlist[i].start()
+
+    print(failed, critical, problematic)
+
+
+
+threaded_tests(eigen.qrm3, 100)
