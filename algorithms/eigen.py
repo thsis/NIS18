@@ -73,7 +73,7 @@ def jacobi(X, precision=1e-6):
     return A[order], U[:, order]
 
 
-def qrm(X, maxiter=5000):
+def qrm(X, maxiter=15000):
     """
     Compute Eigenvalues and Eigenvectors using the QR-Method.
 
@@ -107,7 +107,7 @@ def qrm(X, maxiter=5000):
     return Evals[order], conv
 
 
-def qrm2(X, maxiter=5000):
+def qrm2(X, maxiter=15000):
     """
     First compute similar matrix in Hessenberg form, then compute the
     Eigenvalues and Eigenvectors using the QR-Method.
@@ -142,7 +142,7 @@ def qrm2(X, maxiter=5000):
     return Evals[order], conv
 
 
-def qrm3(X, maxiter=5000):
+def qrm3(X, maxiter=15000):
     """
     First compute similar matrix in Hessenberg form, then compute the
     Eigenvalues and Eigenvectors using the QR-Method.
