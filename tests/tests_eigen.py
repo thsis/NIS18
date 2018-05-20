@@ -47,12 +47,16 @@ def test_algo(algo, Ntests=1000, dim=3, *args, **kwargs):
             A, true_eig = get_test_matrix(dim=dim)
             my_eig, _ = algo(A, *args, **kwargs)
             assert np.alltrue(np.isclose(my_eig, true_eig))
+
         except AssertionError:
             failed += 1
             problematic.append(A)
 
         except ZeroDivisionError:
             critical += 1
+
+        finally:
+            print("Thread done.")
 
 
 def threaded_tests(algo, N, nWorkers=10, *args, **kwargs):
@@ -73,7 +77,7 @@ def threaded_tests(algo, N, nWorkers=10, *args, **kwargs):
 
     logstr = """
     {} out of {} tests failed.
-    {} of them failed critically.
+    {} tests failed critically.
     """.format(failed, N, critical)
 
     print(logstr)
@@ -84,19 +88,19 @@ problematic = []
 failed = 0
 critical = 0
 print("Test Jacobi Method:")
-threaded_tests(eigen.jacobi, 1000, 20, 15, np.inf)
+threaded_tests(eigen.jacobi, 100, 20, 15)
 
 failed = 0
 critical = 0
 print("Test QR-Method1:")
-threaded_tests(eigen.qrm, 1000, 20, 15, np.inf)
+threaded_tests(eigen.qrm, 10, 10, 15, np.inf)
 
 print("Test QR-Method2:")
 failed = 0
 critical = 0
-threaded_tests(eigen.qrm2, 1000, 20, 15, 5000)
+threaded_tests(eigen.qrm2, 1000, 20, 15, np.inf)
 
 failed = 0
 critical = 0
 print("Test QR-Method3:")
-threaded_tests(eigen.qrm3, 1000, 20, 15, 10000)
+threaded_tests(eigen.qrm3, 100, 20, 15, 10000)

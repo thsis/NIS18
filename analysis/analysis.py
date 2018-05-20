@@ -9,9 +9,40 @@ Code for heatmap was found on: https://matplotlib.org/gallery/images_contours_an
 """
 
 import numpy as np
-from algorithms import eigen, helpers
 from matplotlib import pyplot as plt
+from matplotlib import animation
+from algorithms import helpers
 from scipy import linalg as lin
+
+X = np.random.uniform(low=-1.0, high=1.0, size=(5, 5))
+
+# Construct empty matrix for background.
+Empty = np.empty(shape=X.shape)
+Empty[:] = np.nan
+
+# Set up figure and axis
+fig = plt.figure()
+ax = plt.axes(xlim=(Empty.shape[0]-1, 0), ylim=(0, Empty.shape[1]-1))
+plt.ylabel("")
+plt.xlabel("")
+hm = ax.imshow(Empty, cmap=plt.get_cmap('PiYG'))
+ax.figure.colorbar(hm)
+
+
+# Initialize background for each frame
+def init():
+    hm.set_data(Empty)
+    return hm
+
+
+# Define animation behavior
+def animate(i):
+    if i <= 60:
+        A = X
+    else:
+        A = next(iterated_qrm)
+    hm.set_data(A)
+    return hm
 
 
 def demonstrate_qrm(X, maxiter=5000):
@@ -37,73 +68,10 @@ def demonstrate_qrm(X, maxiter=5000):
         yield T
 
 
+iterated_qrm = demonstrate_qrm(X, maxiter=10000)
 
-
-
-def animate(i, X):
-    return next(iterator),
-
-
-
-X = np.array([[1, 2, 3], [2, 5, 6], [3, 6, 1]], dtype=np.float64)
-np.linalg.eig(X)
-eigen.qrm3(X)
-
-fig, ax = plt.subplots()
-im = ax.imshow(X)
-plt.colorbar()
-plt.show()
-
-
-def heatmap(data,  ax=None, cbar_kw={}, cbarlabel="", **kwargs):
-    """
-    Create a heatmap from a numpy array.
-
-    Arguments:
-        data       : A 2D numpy array of shape (N,M)
-        row_labels : A list or array of length N with the labels
-                     for the rows
-        col_labels : A list or array of length M with the labels
-                     for the columns
-    Optional arguments:
-        ax         : A matplotlib.axes.Axes instance to which the heatmap
-                     is plotted. If not provided, use current axes or
-                     create a new one.
-        cbar_kw    : A dictionary with arguments to
-                     :meth:`matplotlib.Figure.colorbar`.
-        cbarlabel  : The label for the colorbar
-    All other arguments are directly passed on to the imshow call.
-    """
-
-    if not ax:
-        ax = plt.gca()
-
-    # Plot the heatmap
-    im = ax.imshow(data, **kwargs)
-
-    # Create colorbar
-    cbar = ax.figure.colorbar(im, ax=ax, **cbar_kw)
-    cbar.ax.set_ylabel(cbarlabel, rotation=-90, va="bottom")
-
-    # We want to show all ticks...
-    ax.set_xticks(np.arange(data.shape[1]))
-    ax.set_yticks(np.arange(data.shape[0]))
-
-    # Turn spines off and create white grid.
-    for edge, spine in ax.spines.items():
-        spine.set_visible(False)
-
-    ax.set_xticks(np.arange(data.shape[1]+1)-.5, minor=True)
-    ax.set_yticks(np.arange(data.shape[0]+1)-.5, minor=True)
-    ax.grid(which="minor", color="w", linestyle='-', linewidth=3)
-    ax.tick_params(which="minor", bottom=False, left=False)
-
-    return im, cbar
-
-
-fig, ax = plt.subplots()
-im, cbar = heatmap(X, ax=ax, cmap="YlGn", cbarlabel="")
-plt.show()
-im.set_data(X)
-
+anim = animation.FuncAnimation(fig, animate,
+                               init_func=init, frames=1500, interval=20)
+anim.save('analysis/qrm_animation.mp4', fps=15,
+          extra_args=['-vcodec', 'libx264'])
 plt.show()
