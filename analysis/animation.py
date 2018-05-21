@@ -1,11 +1,11 @@
 """
-Script that performs analysis of eigenvalue-algorithms.
-    - Visual animation of performed chasing accross iterations
-    - Comparison of algorithms:
-        + Runtimes
-        + Iterations needed until Convergence
+Animate the QR-Method.
 
-Code for heatmap was found on: https://matplotlib.org/gallery/images_contours_and_fields/image_annotated_heatmap.html
+Visualize the performed chasing accross iterations
+
+Code for heatmap was inspired by: https://matplotlib.org/gallery/images_contours_and_fields/image_annotated_heatmap.html
+Code for animations was inspired by:
+https://jakevdp.github.io/blog/2012/08/18/matplotlib-animation-tutorial/
 """
 
 import numpy as np
@@ -38,12 +38,19 @@ fig.suptitle("Demonstrate QR-Method on a 10x10 matrix")
 
 # Initialize background for each frame
 def init():
+    """Initialize fig."""
     hm.set_data(Empty)
     return hm
 
 
 # Define animation behavior
 def animate(i, delay=9):
+    """
+    Update axes of fig.
+        - i: step of current iteration. Will be updated by FuncAnimation-class.
+        - delay: int. Number of frames to delay the initial matrix and the
+          first iteration.
+    """
     global A
     if i < delay:
         A = X
@@ -63,7 +70,13 @@ def animate(i, delay=9):
 
 def demonstrate_qrm(X, maxiter=5000):
     """
-    INSERT DOCSTRING
+    Create generator for transformed matrices after applying the QR-Method.
+
+    Parameters:
+        - X: 2D-numpy array. Matrix whose eigenvalues should be computed.
+        - maxiter: maximum number of iterations to be performed.
+    Yields:
+        - T: 2D-numpy array. Similar matrix to X.
     """
     n, m = X.shape
     assert n == m
@@ -88,6 +101,6 @@ iterated_qrm = demonstrate_qrm(X, maxiter=10000)
 
 anim = animation.FuncAnimation(fig, animate,
                                init_func=init, frames=130, interval=20)
-anim.save('analysis/qrm_animation.mp4', fps=3,
+anim.save('analysis/qrm_symmetric.mp4', fps=3,
           extra_args=['-vcodec', 'libx264'])
 plt.show()
