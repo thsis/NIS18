@@ -1,24 +1,25 @@
-"""
-Define class for Principal Component Analysis of a rank 2 array of data.
 
-PCA:
-Attributes:
-    - data:
-    - eigenvectors:
-    - eigenvalues:
-    - rotated data:
-    - inertia:
-Methods:
-    - fit(X):
-    - plot(dim):
-    - scree():
-"""
 import numpy as np
 from matplotlib import pyplot as plt
 from algorithms import eigen
 
 
 class PCA(object):
+    """
+    Define class for Principal Component Analysis of a rank 2 array of data.
+
+    PCA:
+    Attributes:
+        - data:
+        - eigenvectors:
+        - eigenvalues:
+        - rotated data:
+        - inertia:
+    Methods:
+        - fit(X):
+        - plot(dim):
+        - scree():
+    """
     def __init__(self):
         self.data = None
         self.rotated_data = None

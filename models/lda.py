@@ -1,27 +1,27 @@
-"""
-Define class for Linear Discriminant Analysis of a rank 2 array of data.
-
-LDA:
-Attributes:
-    - data:
-    - generalized eigenvectors:
-    - generalized eigenvalues:
-    - rotated data:
-    - inertia:
-Methods:
-    - fit(X):
-    - plot(dim):
-    - scree():
-"""
 import numpy as np
 from algorithms import eigen
 from matplotlib import pyplot as plt
 
 
 class LDA(object):
+    """
+    Define class for Linear Discriminant Analysis of a rank 2 array of data.
+
+    LDA:
+    Attributes:
+        - data:
+        - generalized eigenvectors:
+        - generalized eigenvalues:
+        - rotated data:
+        - inertia:
+    Methods:
+        - fit(X):
+        - plot(dim):
+        - scree():
+    """
     def __init__(self):
         self.data = None
-        self.group = None
+        self.groups = None
         self.Sb = None
         self.Sw = None
         self.rotated_data = None
@@ -30,6 +30,26 @@ class LDA(object):
         self.inertia = None
 
     def fit(self, X, g):
+        """
+        Fit Linear Discriminant model to data.
+
+        Parameters:
+            - X: numpy ndarray of shape (n, m). Contains data and labels of
+                 observations
+            - g: integer indicating the column of labels.
+
+        Defines Attributes:
+            - data: copy of X without label column.
+            - groups: 1D numpy array of labels.
+            - Sb: 2D numpy array of Between-Class-Scatter-Matrix.
+            - Sw: 2D numpy array of Within-Class-Scatter-Matrix.
+            - eigenvalues: Fitted eigenvalues for generalized eigenvalue
+              problem.
+            - eigenvectors: 2D numpy array (m, m). Contains eigenvectors.
+            - rotated_data: 2D numpy array (n, m). Contains projected points.
+            - inertia: 1D numpy array. Contains calculated inertia.
+
+        """
         _, m = X.shape
         data_cols = [i for i in range(m) if i != g]
         self.data = X[:, data_cols]

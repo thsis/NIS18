@@ -61,9 +61,3 @@ def qr_factorize(X, offset=0):
         R = Pi.dot(R)
 
     return Q.T, R
-
-
-def hessenberg(X):
-    """Compute Hessenberg form of matrix X using Givens rotations."""
-
-    pass

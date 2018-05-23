@@ -20,7 +20,7 @@ def jacobi2x2(A):
     Parameters:
         A - 2x2 numpy array.
     Returns:
-        A 2x2 diagonal numpy array
+        A - 2x2 diagonal numpy array
     """
     assert type(A) == np.ndarray
     assert A.shape == (2, 2)
@@ -33,7 +33,7 @@ def jacobi2x2(A):
     return E
 
 
-def jacobi(X, precision=1e-6):
+def jacobi(X, precision=1e-6, debug=False):
     """
     Compute Eigenvalues and Eigenvectors for symmetric matrices.
 
@@ -53,6 +53,7 @@ def jacobi(X, precision=1e-6):
     A = copy.deepcopy(X)
     U = np.eye(A.shape[0])
     L = np.array([1])
+    iterations = 0
 
     while L.max() > precision:
         L = np.abs(np.tril(A, k=0) - np.diag(A.diagonal()))
@@ -65,15 +66,18 @@ def jacobi(X, precision=1e-6):
 
         A = np.dot(V.T, A.dot(V))
         U = U.dot(V)
+        iterations += 1
 
     # Sort by eigenvalue (descending order) and flatten A
     A = np.diag(A)
     order = np.abs(A).argsort()[::-1]
+    if debug:
+        return iterations
 
     return A[order], U[:, order]
 
 
-def qrm(X, maxiter=15000):
+def qrm(X, maxiter=15000, debug=False):
     """
     Compute Eigenvalues and Eigenvectors using the QR-Method.
 
@@ -101,13 +105,14 @@ def qrm(X, maxiter=15000):
 
     if not conv:
         warnings.warn("Convergence was not reached. Consider raising maxiter.")
-
+    if debug:
+        return k
     Evals = A.diagonal()
     order = np.abs(Evals).argsort()[::-1]
-    return Evals[order], conv
+    return Evals[order], Q[order, :]
 
 
-def qrm2(X, maxiter=15000):
+def qrm2(X, maxiter=15000, debug=False):
     """
     First compute similar matrix in Hessenberg form, then compute the
     Eigenvalues and Eigenvectors using the QR-Method.
@@ -136,13 +141,14 @@ def qrm2(X, maxiter=15000):
 
     if not conv:
         warnings.warn("Convergence was not reached. Consider raising maxiter.")
-
+    if debug:
+        return k
     Evals = A.diagonal()
     order = np.abs(Evals).argsort()[::-1]
-    return Evals[order], conv
+    return Evals[order], Q[order, :]
 
 
-def qrm3(X, maxiter=15000):
+def qrm3(X, maxiter=15000, debug=False):
     """
     First compute similar matrix in Hessenberg form, then compute the
     Eigenvalues and Eigenvectors using the QR-Method.
@@ -172,7 +178,8 @@ def qrm3(X, maxiter=15000):
 
     if not conv:
         warnings.warn("Convergence was not reached. Consider raising maxiter.")
-
+    if debug:
+        return k
     Evals = T.diagonal()
     order = np.abs(Evals).argsort()[::-1]
-    return Evals[order], conv
+    return Evals[order], Q[order, :]
