@@ -12,9 +12,9 @@ trials = pd.DataFrame(columns=["algorithm", "dimension", "iterations", "time"])
 
 # Flags:
 ALGORITHMS = [eigen.jacobi, eigen.qrm, eigen.qrm2, eigen.qrm3]
-DIMENSIONS = range(3, 20)
+DIMENSIONS = range(3, 6)
 N = 100
-N_WORKERS = 20
+N_WORKERS = 50
 
 
 def test(func, Ntests, dim, *args, **kwargs):
@@ -45,6 +45,8 @@ def threaded_tests(func, Ntotal, Nworkers, dim):
         threadlist[i] = threading.Thread(target=test,
                                          args=(func, nJobs, dim))
         threadlist[i].start()
+
+    for i in range(Nworkers):
         threadlist[i].join()
 
 

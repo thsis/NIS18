@@ -73,6 +73,8 @@ def threaded_tests(algo, N, nWorkers=10, *args, **kwargs):
         threadlist[i] = threading.Thread(target=test_algo,
                                          args=(algo, n, *args))
         threadlist[i].start()
+
+    for i in range(nWorkers):
         threadlist[i].join()
 
     logstr = """
