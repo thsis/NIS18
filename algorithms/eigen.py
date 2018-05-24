@@ -101,7 +101,7 @@ def qrm(X, maxiter=15000, debug=False):
         Q, R = helpers.qr_factorize(A)
         A = R.dot(Q)
 
-        conv = all(np.isclose(np.tril(A, k=-1), np.zeros((n, n))).flatten())
+        conv = np.alltrue(np.isclose(np.tril(A, k=-1), np.zeros((n, n))))
 
     if not conv:
         warnings.warn("Convergence was not reached. Consider raising maxiter.")
@@ -137,7 +137,7 @@ def qrm2(X, maxiter=15000, debug=False):
         Q, R = helpers.qr_factorize(A)
         A = R.dot(Q)
 
-        conv = all(np.isclose(np.tril(A, k=-1), np.zeros((n, n))).flatten())
+        conv = np.alltrue(np.isclose(np.tril(A, k=-1), np.zeros((n, n))))
 
     if not conv:
         warnings.warn("Convergence was not reached. Consider raising maxiter.")
