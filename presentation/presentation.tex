@@ -1,0 +1,192 @@
+\documentclass{beamer}
+
+\usepackage{graphicx}
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{eso-pic}
+\usepackage{mathrsfs}
+\usepackage{url}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage{hyperref}
+\usepackage{booktabs}
+% \usepackage{bbm}
+\usepackage{cooltooltips}
+\usepackage{colordef}
+\usepackage{beamerdefs}
+\usepackage{lvblisting}
+
+\usepackage{multimedia}
+\usepackage{algorithmicx}
+\usepackage[noend]{algpseudocode}
+\usepackage{algorithm}
+
+\pgfdeclareimage[height=2cm]{logobig}{hulogo}
+\pgfdeclareimage[height=0.7cm]{logosmall}{Figures/LOB_Logo}
+
+\renewcommand{\titlescale}{1.0}
+\renewcommand{\titlescale}{1.0}
+\renewcommand{\leftcol}{0.6}
+
+\title[Eigenvalue Problems - Numerical Solutions]{Eigenvalues and Eigenvectors}
+\authora{Thomas Siskos}
+\authorb{}
+\authorc{}
+
+\def\linka{http://github.com/thsis/NIS18}
+\def\linkb{}
+\def\linkc{}
+
+\institute{Numerical Introductory Seminar \\
+Humboldt--Universität zu Berlin \\}
+
+\hypersetup{pdfpagemode=FullScreen}
+
+\begin{document}
+
+% 0-1
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame[plain]{
+
+\titlepage
+}
+\frame{
+  \tableofcontents
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Motivation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% 1-1
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame{
+\frametitle{Motivation}
+
+}
+
+\subsection{PCA}
+\frame{
+\frametitle{PCA}
+
+}
+
+\subsection{LDA}
+\frame{
+\frametitle{LDA}
+
+}
+
+\section{Key Idea \& Definitions}
+\frame{
+\frametitle{}
+
+}
+\subsection{Characteristic Polynomial \& Diagonal Matrices}
+\frame{
+
+}
+\subsection{Similarity Transformations}
+\subsubsection{Householder Reflections}
+\subsubsection{Givens Rotations}
+
+\section{Algorithms}
+\subsection{Jacobi-Method}
+\frame{
+
+}
+
+\frame{
+\frametitle{Jacobi-Method}
+\begin{algorithm}[H]
+\caption{\texttt{jacobi}}
+\label{j-meth}
+\begin{algorithmic}
+  \Require symmetric matrix $A$
+  \Ensure $0 < precision < 1$
+  \Statex \textbf{initialize: } $L \gets A$; $U \gets I$; $L_{max} \gets 1$
+  \While{$L_{max} > precision$}
+    \State Find indices $i$, $j$ of largest value in lower triangle of $abs(L)$ 
+        \State $L_{max} \gets L_{i,j}$
+            \State $\alpha \gets \frac{1}{2}\cdot \arctan(\frac{2A_{i, j}}{A_{i, i}-A_{j, j}})$
+    \State $V \gets I$
+    \State $V_{i, i}, V_{j, j} \gets \cos \alpha$; $V_{i, j}, V_{j, i} \gets -\sin \alpha, \sin \alpha$
+    \State $A \gets V^{\prime} A V$; $U \gets UV$
+    
+  \EndWhile
+  \Return $diag(A), U$
+\end{algorithmic}
+\end{algorithm}
+}
+\subsection{QR-Method}
+\frame{
+
+}
+
+\subsubsection{Basic Variant}
+\frame{
+\frametitle{Basic QR-Method}
+\begin{algorithm}[H]
+\caption{\texttt{QRM1}}
+\label{qr1-meth}
+  \begin{algorithmic}
+    \Require square matrix $A$
+    \Statex \textbf{initialize: } $conv \gets False$
+    \While{not $conv$}
+      \State $Q, R \gets$ QR-Factorization of $A$
+      \State $A \gets RQ$
+      \If{$A$ is diagonal}
+        \State $conv \gets \texttt{True}$
+        \Statex
+      \EndIf
+    \EndWhile  
+    \Return $diag\left(A\right), Q$
+  \end{algorithmic}
+\end{algorithm}
+}
+\subsubsection{Hessenberg Variant}
+\frame{
+\frametitle{Refined QR-Method}
+\begin{algorithm}[H]
+\caption{\texttt{QRM2}}
+\label{qr2-meth}
+\begin{algorithmic}
+  \Require square matrix $A$
+  \State $A \gets \texttt{hessenberg(}A\texttt{)}$
+  \State continue with: \Call {QRM1} A 
+\end{algorithmic}
+\end{algorithm}
+}
+
+\frame{
+  \frametitle{QRM2 Visualized}
+  \begin{center}
+    \movie[width=8cm, height=5.35cm]{\includegraphics[width=8cm, height=5.35cm]{Figures/placeholder.jpg}}{Figures/qrm_symmetric.mp4}
+  \end{center}
+}
+\subsubsection{Accelerated Variant}
+\frame{
+\frametitle{Accelerated QR-Method}
+\begin{algorithm}[H]
+\begin{algorithmic}
+\Require square matrix $A$
+\end{algorithmic}
+\end{algorithm}
+}
+
+
+\section{Analysis}
+\subsection{Accuracy}
+\frame{
+
+}
+\subsection{Efficiency}
+\frame{
+
+}
+
+
+\end{document}
