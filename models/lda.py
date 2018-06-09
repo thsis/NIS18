@@ -54,6 +54,7 @@ class LDA(object):
         data_cols = [i for i in range(m) if i != g]
         self.data = X[:, data_cols]
         self.groups = X[:, g]
+        self.m = m - 1
 
         groups = np.unique(self.groups)
         group_idx = [self.groups == c for c in groups]
@@ -81,12 +82,11 @@ class LDA(object):
         # Solve Eigenvalue Problem.
         # Decompose Sb to Sb05.
         evalSb, evecSb = eigen.jacobi(self.Sb)
-        Lambda05 = np.diag(np.sqrt(evalSb))
+        Lambda05 = np.diag(-np.sqrt(np.abs(evalSb)))
         Sb05 = np.dot(evecSb, Lambda05).dot(evecSb.T)
 
         # Calculate Inverse of Sw.
         Sw_inv = np.linalg.inv(self.Sw)
-        print(np.dot(Sb05, Sw_inv).dot(Sb05))
 
         self.eigenvalues, self.eigenvectors = eigen.jacobi(
             np.dot(Sb05, Sw_inv).dot(Sb05))
@@ -101,7 +101,6 @@ class LDA(object):
         """
         Return scree plot for the supplied data.
         """
-        fig, ax = plt.subplots()
         ax = plt.plot(self.inertia)
         ax = plt.scatter(x=range(self.m),
                          y=self.inertia)
@@ -112,9 +111,9 @@ class LDA(object):
         plt.title("LDA: Scree plot")
         plt.xlabel("Eigenvalues")
 
-        return fig, ax
+        return ax
 
-    def plot(self, x, y):
+    def plot(self, x, y, **kwargs):
         """
         Return 2-dimensional plot for 2 Linear Discriminants.
 
@@ -123,15 +122,16 @@ class LDA(object):
                  x-axis.
             - y: Integer indicating which Linear Discriminant to plot on
                  y-axis.
+            - kwargs: keyword arguments to pyplot's scatter function.
         """
         assert type(x) == type(y) == int
         assert x in range(self.m) and y in range(self.m)
-        fig, ax = plt.subplots()
         ax = plt.scatter(x=self.rotated_data[:, x],
-                         y=self.rotated_data[:, y])
+                         y=self.rotated_data[:, y],
+                         **kwargs)
         plt.grid(True)
         plt.xlabel(str(x+1) + ". Linear Discriminant")
         plt.ylabel(str(y+1) + ". Linear Discriminant")
         plt.title("LDA: Rotation")
 
-        return fig, ax
+        return ax

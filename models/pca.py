@@ -28,7 +28,7 @@ class PCA(object):
         self.eigenvalues = None
         self.inertia = None
 
-    def fit(self, X, norm=True):
+    def fit(self, X, norm=False):
         """
         Fit PCA to data.
 
@@ -70,7 +70,6 @@ class PCA(object):
         """
         Return scree plot for the supplied data.
         """
-        fig, ax = plt.subplots()
         ax = plt.plot(self.inertia)
         ax = plt.scatter(x=range(self.m),
                          y=self.inertia)
@@ -81,25 +80,26 @@ class PCA(object):
         plt.title("PCA: Scree plot")
         plt.xlabel("Eigenvalues")
 
-        return fig, ax
+        return ax
 
-    def plot(self, x, y):
+    def plot(self, x, y, **kwargs):
         """
         Return 2-dimensional plot for 2 Pricipal Components.
 
         Parameters:
             - x: Integer indicating which Pricipal Component to plot on x-axis.
             - y: Integer indicating which Pricipal Component to plot on y-axis.
+            - kwargs: keyword arguments to pyplot's scatter() function.
 
         """
         assert type(x) == type(y) == int
         assert x in range(self.m) and y in range(self.m)
-        fig, ax = plt.subplots()
         ax = plt.scatter(x=self.rotated_data[:, x],
-                         y=self.rotated_data[:, y])
+                         y=self.rotated_data[:, y],
+                         **kwargs)
         plt.grid(True)
         plt.xlabel(str(x+1) + ". Pricipal Component")
         plt.ylabel(str(y+1) + ". Pricipal Component")
         plt.title("PCA: Rotation")
 
-        return fig, ax
+        return ax
