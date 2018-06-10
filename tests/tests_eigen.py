@@ -55,8 +55,6 @@ def test_algo(algo, Ntests=1000, dim=3, *args, **kwargs):
         except ZeroDivisionError:
             critical += 1
 
-        finally:
-            print("Thread done.")
 
 
 def threaded_tests(algo, N, nWorkers=10, *args, **kwargs):
@@ -90,12 +88,12 @@ problematic = []
 failed = 0
 critical = 0
 print("Test Jacobi Method:")
-threaded_tests(eigen.jacobi, 100, 20, 15)
+threaded_tests(eigen.jacobi, 1000, 20, 15)
 
 failed = 0
 critical = 0
 print("Test QR-Method1:")
-threaded_tests(eigen.qrm, 10, 10, 15, np.inf)
+threaded_tests(eigen.qrm, 1000, 10, 15, np.inf)
 
 print("Test QR-Method2:")
 failed = 0
@@ -105,4 +103,4 @@ threaded_tests(eigen.qrm2, 1000, 20, 15, np.inf)
 failed = 0
 critical = 0
 print("Test QR-Method3:")
-threaded_tests(eigen.qrm3, 100, 20, 15, 10000)
+threaded_tests(eigen.qrm3, 1000, 20, 15, np.inf)

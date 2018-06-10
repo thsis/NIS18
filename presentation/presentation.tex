@@ -1,3 +1,4 @@
+
 \documentclass{beamer}
 
 \usepackage{graphicx}
@@ -25,12 +26,14 @@
 \usepackage[noend]{algpseudocode}
 \usepackage{algorithm}
 
+
 \pgfdeclareimage[height=2cm]{logobig}{hulogo}
 \pgfdeclareimage[height=0.7cm]{logosmall}{Figures/LOB_Logo}
 
 \renewcommand{\titlescale}{1.0}
 \renewcommand{\titlescale}{1.0}
 \renewcommand{\leftcol}{0.6}
+
 
 \title[Eigenvalue Problems - Numerical Solutions]{Eigenvalues and Eigenvectors}
 \authora{Thomas Siskos}
@@ -47,7 +50,6 @@ Humboldt--University Berlin \\}
 \hypersetup{pdfpagemode=FullScreen}
 
 \begin{document}
-
 % 0-1
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \frame[plain]{
@@ -60,11 +62,8 @@ Humboldt--University Berlin \\}
   \tableofcontents
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Motivation}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% 1-1
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Motivation}
 \frame[containsverbatim]{
 \frametitle{PCA}
 \begin{columns}[onlytextwidth]
@@ -75,13 +74,18 @@ Humboldt--University Berlin \\}
 	\end{itemize}
 \end{column}
 \begin{column}{0.75\textwidth}
-	\begin{center}
+\begin{figure}
+  	\begin{center}
 	\includegraphics[scale=0.20]{../media/plots/iris_raw.png}
+    \caption{\href {https://github.com/thsis/NIS18/blob/master/tests/tests_models.py}{Iris Pairplot}  \protect\includegraphics[scale=0.05]{qletlogo.pdf}}
 	\end{center}
-
+\end{figure}
 \end{column}
 \end{columns}
 }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \frame[containsverbatim, label=PCA-prop]{
 \frametitle{PCA}
 \begin{columns}[onlytextwidth]
@@ -105,10 +109,15 @@ Humboldt--University Berlin \\}
 	\end{itemize}
 \end{column}
 \begin{column}{0.35\textwidth}
-	\includegraphics[width=3.5cm, height=6.5cm]{../media/plots/iris_pca.png}
+\begin{figure}
+	\includegraphics[width=3.5cm, height=5cm]{../media/plots/iris_pca.png}
+	\caption{\href {https://github.com/thsis/NIS18/blob/master/tests/tests_models.py}{Iris PCA}  \protect\includegraphics[scale=0.05]{qletlogo.pdf}}
+\end{figure}
 \end{column}
 \end{columns}
 }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \frame{
 \frametitle{LDA}
@@ -128,7 +137,9 @@ Humboldt--University Berlin \\}
 
 }
 
-\frame[containsverbatim]{
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\frame[containsverbatim, label=LDA-prop]{
 \frametitle{LDA}
 \begin{columns}[onlytextwidth]
 \begin{column}{0.65\textwidth}
@@ -143,38 +154,189 @@ Humboldt--University Berlin \\}
 \end{itemize}
 \end{column}
 \begin{column}{0.35\textwidth}
+\begin{figure}
 	\begin{center}
-	\includegraphics[width=3.5cm, height=6.5cm]{../media/plots/iris_lda.png}
+	\includegraphics[width=3.5cm, height=5cm]{../media/plots/iris_lda.png}
+	\caption{\href {https://github.com/thsis/NIS18/blob/master/tests/tests_models.py}{Iris LDA}  \protect\includegraphics[scale=0.05]{qletlogo.pdf}}
 	\end{center}
+\end{figure}
 \end{column}
 \end{columns}
-
 }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Key Idea \& Definitions}
 \frame{
-\frametitle{}
-
+\frametitle{Eigenvalue}
+If $A$ is an $n \times n$ matrix, $v$ is a non-zero vector and $\lambda$ is a scalar, such that
+\begin{equation}
+\label{eigenvalue-def}
+Av = \lambda v
+\end{equation}
+then $v$ is called an \textit{eigenvector} and $\lambda$ is called an \textit{eigenvalue} of the matrix $A$.
+An eigenvalue of A is a root of the characteristic equation,
+\begin{equation}
+\label{eigenvalue-solve}
+det\left(A - \lambda I \right) = 0
+\end{equation}
 }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \subsection{Characteristic Polynomial \& Diagonal Matrices}
+\frame[label=companion_prop]{
+\frametitle{The characteristic polynomial}
+Consider the polynomial
+\begin{equation}
+\label{characteristic-polynomial}
+f(\lambda) = \lambda^p + a_{p-1}\lambda^{p-1} + \dots + a_1 \lambda + a_0
+\end{equation}
+We now construct a matrix $A \in \mathbb{R}^{n \times n}$ such that the eigenvalues of $A$ are the roots of the polynomial $f(\lambda)$ \hyperlink{companion_exmpl}{\beamergotobutton{Example}}:
+\begin{equation}
+\label{companion-matrix}
+A = \begin{bmatrix}
+        0    & 1    & 0    & \dots & 0 \\
+        0    & 0    & 1    & \cdots & 0 \\
+             &      &      & \ddots & \\
+        0    & 0    & 0    & \dots  & 1 \\
+        -a_0 & -a_1 & -a_2 & \dots  & -a_{p-1} \\  
+    \end{bmatrix}
+\end{equation} 
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Similarity Transformations}
+\frame[containsverbatim]{
+\frametitle{General Idea}
+
+What are the eigenvalues of $X_1$ and $X_2$?
+
+\begin{columns}[onlytextwidth]
+\begin{column}{0.3\textwidth}
+\begin{equation*}
+X_1 = \begin{bmatrix}
+1 & 0 & 0 & 0 \\
+0 & 2 & 0 & 0 \\
+0 & 0 & 3 & 0 \\
+0 & 0 & 0 & 4 \\
+\end{bmatrix}
+\end{equation*}
+\end{column}
+\begin{column}{0.7\textwidth}
+\begin{equation*}
+X_2 = \begin{bmatrix}
+        2.297 & -0.461 & -0.459 &  0.225 \\
+       -0.461 &  1.4   & -0.097 & -0.829 \\
+       -0.459 & -0.097 &  2.672 &  0.224 \\
+        0.225 & -0.829 &  0.224 &  3.631 \\
+\end{bmatrix}
+\end{equation*}
+\end{column}
+
+\end{columns}
+}
+
+\frame[label=similarity_prop]{
+\frametitle{Similarity Transformations}
+
+Two $n \times n$ matrices $A$ and $B$, are said to be \textit{similar} if there exists a nonsingular matrix $P$ such that
+\begin{equation}
+\label{similarity-prop}
+A = P^{-1} B P
+\end{equation}
+
+If the two matrices $A$ and $B$ are similar, then they also share the same eigenvalues. \hyperlink{similarity_proof}{\beamergotobutton{Proof}}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Householder Reflections}
+\frame[label=householder_prop]{
+\frametitle{Householder Reflections}
+Let $u$ and $v$ be orthonormal vectors and let $x$ be a vector in the space spanned by $u$ and $v$, such that
+$$x = c_1 u + c_2 + v$$ 
+for some scalars $c_1$ and $c_2$. The vector 
+$$\tilde{x}=-c_1 u + c_2 v$$ 
+is a \textit{reflection} of x through the line difined by the vector u. Now consider the matrix
+
+\begin{equation}
+Q = I - 2 uu^{\prime}.
+\end{equation}
+
+Note that \hyperlink{householder_proof}{\beamergotobutton{Proof}}:
+$$Qx = \tilde{x}$$
+}
+
 \frame{
+\frametitle{Householder Reflections}
+We will use Householder-Reflections to tranform a vector
+$$a = (a_1, \dots, a_n)$$
+into 
+$$\hat{a} = (\hat{a}_1, 0, \dots, 0)$$
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Givens Rotations}
+\frame[containsverbatim]{
+\frametitle{Givens Rotations}
+Using orthogonal transformations we can also rotate a vector in such a way that a specified element becomes 0 and only one other element in the vector is changed.
+
+\begin{columns}[onlytextwidth]
+\begin{column}{0.65\textwidth}
+	where the entries in the $p^{th}$ and $q^{th}$ rows and columns are
+$$\cos\theta = \frac{x_p}{||x||}$$
+
+\end{column}
+\begin{column}{0.35\textwidth}
+	\includegraphics[scale=.5]{../media/plots/givens.png}
+\end{column}
+\end{columns}
+
+
 
 }
-\subsection{Similarity Transformations}
-\subsubsection{Householder Reflections}
-\subsubsection{Givens Rotations}
+\frame[label=givens_prop]{
+\frametitle{Givens Rotations}
+
+\begin{equation}
+V_{pq}(\theta) = \begin{bmatrix}
+                      1 &  &  &  &  &  &  &  &  \\
+                       & \ddots &  &  &  &  & &  &  \\
+                       &  & 1 &  &  &  &  &  &  \\
+                       &  &  & \cos\theta &  & \sin\theta &  &  &  \\
+                       &  &  &  & \ddots &  &  &  &  \\
+                       &  &  & -\sin\theta &  & \cos\theta &  &  &  \\
+                       &  &  &  &  &  & 1 &  &  \\
+                       &  &  &  &  &  &  & \ddots &  \\
+                       &  &  &  &  &  &  &  & 1 \\                      
+                 \end{bmatrix}
+\end{equation}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Algorithms}
 \subsection{Jacobi-Method}
 \frame{
+\frametitle{Jacobi Method}
 
+The Jacobi method for determining the eigenvalues of a symmetric matrix $A$ uses a sequence of orthogonal similarity transformations that result in the transformation:
+$$A = P  \Lambda P^{-1}$$ or rather: $$\Lambda=P^{-1}AP$$
+where we use Givens Rotations to obtain $P$. The Jacobi iteration is:
+\begin{equation}
+\label{j-meth}
+A^{k} = V_{p_k q_k}(\theta_k)A^{k-1}V_{p_k q_k}(\theta_k)
+\end{equation}
+
+The Jacobi Method is of $O(n^3)$
 }
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \frame{
 \frametitle{Jacobi-Method}
 \begin{algorithm}[H]
 \caption{\texttt{jacobi}}
-\label{j-meth}
+\label{j-algo}
 \begin{algorithmic}
   \Require symmetric matrix $A$
   \Ensure $0 < precision < 1$
@@ -194,9 +356,20 @@ Humboldt--University Berlin \\}
 }
 \subsection{QR-Method}
 \frame{
+\frametitle{QR-Method}
+The QR-Method is the most common algorithm for obtaining eigenvalues and eigenvectors of a matrix $A$. It relies on the so called QR-Factorization:
+\begin{equation}
+A = QR,
+\end{equation}
+where $Q$ is orthogonal and $R$ is upper triangular. \\
+The QR iteration is:
+\begin{equation}
+  A^k = Q_{k-1}^{\prime} A_{k-1} Q_{k-1} = RQ
+\end{equation}
 
+The QR Method is of $O(n^3)$
 }
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Basic Variant}
 \frame{
 \frametitle{Basic QR-Method}
@@ -218,9 +391,33 @@ Humboldt--University Berlin \\}
   \end{algorithmic}
 \end{algorithm}
 }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Hessenberg Variant}
 \frame{
 \frametitle{Refined QR-Method}
+
+\begin{columns}[onlytextwidth]
+\begin{column}{0.5\textwidth}
+For faster convergence it is common to convert the matrix first into a so called upper Hessenberg form.
+\end{column}
+\begin{column}{0.5\textwidth}
+$$
+\begin{bmatrix}
+ X & X & X & X & X & X & X \\
+ X & X & X & X & X & X & X \\
+ 0 & X & X & X & X & X & X \\
+ 0 & 0 & X & X & X & X & X \\
+ 0 & 0 &  0 & X & X & X & X \\
+ 0 & 0 & 0 & 0 & X & X & X \\
+ 0 & 0 & 0 & 0 & 0 & X & X \\
+\end{bmatrix} 
+$$
+\end{column}
+\end{columns}
+
+
+
+
 \begin{algorithm}[H]
 \caption{\texttt{QRM2}}
 \label{qr2-meth}
@@ -231,45 +428,87 @@ Humboldt--University Berlin \\}
 \end{algorithmic}
 \end{algorithm}
 }
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \frame{
   \frametitle{QRM2 Visualized}
   \begin{center}
     \movie[width=8cm, height=5.35cm]{\includegraphics[width=8cm, height=5.35cm]{Figures/placeholder.jpg}}{Figures/qrm_symmetric.mp4}
+    
+    \href {https://github.com/thsis/NIS18/blob/master/analysis/animation.py}{QR-Method} \includegraphics[scale=0.05]{qletlogo.pdf}
   \end{center}
+      
 }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Accelerated Variant}
+\frame{
+\frametitle{Accelerated QR-Method}
+
+We can accelerate the QR-Method by creating an artificial zero on the main diagonal of $A^k$s Hessenberg form $T$ at an iteration step $k$:
+
+\begin{align*}
+T^{\star} &= T - t _{p-1, p-1} I \\
+T^{\star} &= QR \\
+T         &= T^{\star} + t _{p-1, p-1} I
+\end{align*}
+}
+
 \frame{
 \frametitle{Accelerated QR-Method}
 \begin{algorithm}[H]
 \begin{algorithmic}
-\Require square matrix $A$
+\Require square matrix $A \in \mathbb{R}^{p \times p}$
+\State $T \gets \texttt{hessenberg}(A),\ conv \gets False$
+\While{not $conv$}
+    \State $Q, R \gets$ QR-Factorization of $T - t_{p-1, p-1} I$
+    \State $T \gets RQ + t_{p-1, p-1}I$
+    \If{$T$ is diagonal}
+        \State $conv \gets True$
+    \EndIf
+\EndWhile
+\Return $diag\left(T\right), Q$
 \end{algorithmic}
 \end{algorithm}
 }
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Analysis}
 \subsection{Accuracy}
 \frame{
+\frametitle{Unit tests - Idea}
+\begin{enumerate}
+\item Construct a $p \times p$ matrix, with known Eigenvalues $\lambda_{true} \in \mathbb{R}^p$. To do this we can invert the spectral decomposition.
+\item Run the implemented algorithm on it, obtain the computed Eigenvalues $\lambda_{algo} \in \mathbb{R}^p$.
+\item Assess $L_1$-Norm: $|\lambda_{true} - \lambda_{algo}|$, pass the test if it is smaller than a threshold $\epsilon$
+\end{enumerate}
 
+Repeat the procedure $1000$ times.
 }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Efficiency}
 \frame{
 \frametitle{Time taken}
+\begin{figure}
 \begin{center}
-  \includegraphics[width=11.5cm, height=6cm]{../media/plots/time_boxplot.png}
+
+  	\caption{\href {https://github.com/thsis/NIS18/blob/master/tests/tests_eigen.py}{Unit-tests: Time}  \includegraphics[scale=0.05]{qletlogo.pdf}}
+  \includegraphics[width=11.5cm, height=5cm]{../media/plots/time_boxplot.png}
 \end{center}
+\end{figure}
 }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \frame{
 \frametitle{Iterations needed}
+\begin{figure}
 \begin{center}
-  \includegraphics[width=11.5cm, height=6cm]{../media/plots/iterations_boxplot.png}
+\caption{\href {https://github.com/thsis/NIS18/blob/master/tests/tests_eigen.py}{Unit-tests: Iterations}  \protect\includegraphics[scale=0.05]{qletlogo.pdf}}
+  \includegraphics[width=11.5cm, height=5cm]{../media/plots/iterations_boxplot.png}
+  	
 \end{center}
+\end{figure}
 }
 
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \frame[label=PCA-proof]{
 \frametitle{PCA: proof}
 The objective of \hyperlink{PCA-prop}{\beamergotobutton{PCA}}:
@@ -290,7 +529,7 @@ First order condition:
 	\end{align}
 Which is now reduced to a common Eigenvalue problem.
 }
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \frame[label=LDA-proof]{
 \frametitle{LDA: proof}
 The objective of \hyperlink{LDA-prop}{\beamergotobutton{LDA}}:
@@ -300,6 +539,7 @@ Which we can reformulate to:
 Corresponding Lagrangean:
   $$ \mathcal{L}(w, S_B, S_W, \lambda) = w^{\prime}S_B w - \lambda \left(w^{\prime}S_W w - 1\right)$$
 }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \frame{
 \frametitle{LDA: proof}
 First order condition:
@@ -313,5 +553,88 @@ $$S_B^{-\frac{1}{2}}S_{W}^{-1}S_B^{-\frac{1}{2}} w = \lambda w$$
 
 Which is a now just a normal Eigenvalue problem as before \hyperlink{LDA-prop}{\beamergotobutton{back}}.
 }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame[label=similarity_proof]{
+\frametitle{Eigenvalues of similar matrices}
+From the definition in (\ref{similarity-prop}) it follows immediately that a matrix $A$ with wigenvalues $\lambda_1, \dots, \lambda_n$ is similar to the matrix $diag(\lambda_1, \dots, \lambda_n)$.
+
+If $A$ and $B$ are similar, as in (\ref{similarity-prop}), it holds:
+\begin{align*}
+B - \lambda I &= P^{-1} B P - \lambda P^{-1} I P \notag \\
+              &= A - \lambda I.
+\end{align*}
+ Hence $A$ and $B$ have the same eigenvalues. Additionally, important transformations are based around orthogonal matrices. If $Q$ is orthogonal and
+\begin{equation*}
+A = Q^{\prime} B Q,
+\end{equation*}
+$A$ and $B$ are said to be \textit{orthogonally similar} \hyperlink{similarity_prop}{\beamergotobutton{back}}. 
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame[label=companion_exmpl]{
+\frametitle{Companion-Matrix: Example}
+Demonstrate that the companion matrix \hyperlink{companion_prop}{\beamergotobutton{back}}:
+\begin{enumerate}
+  \item corresponds to a polynomial.
+  \item has eigenvalues equal to the roots of the polynomial.
+\end{enumerate} 
+ $$A = \begin{bmatrix}
+           0    & 1 \\
+           -a_0 & -a_1 \\
+       \end{bmatrix}$$
+       
+  \begin{align*}
+      det \left(A - \lambda I\right) &= \begin{bmatrix}
+                                            0 - \lambda    & 1 \\
+                                            -a_0           & -a_1- \lambda \\
+       \end{bmatrix} \\
+                                     &= -\lambda\left(-a_1 - \lambda\right) + a_0 \\
+                                     &= \lambda^2 + a_1 \lambda + a_0
+  \end{align*}
+
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\frame[label=householder_proof]{
+\frametitle{Householder Reflections: proof}
+\hyperlink{householder_prop}{\beamergotobutton{back}}
+Remember:
+\begin{itemize}
+\item $Q = I - 2 uu^{\prime}$.
+\item $u$ $v$ are orthonormal.
+\end{itemize}
+
+\begin{align*}
+Qx &= c_1 u + c_2 v - 2c_1 uuu^{\prime} - 2 c_2 v uu^{\prime} \\
+   &= c_1 u + c_2 v - 2c_1 u^{\prime}uu - 2 c_2 u^{\prime} v u \\
+   &= -c_1 u + c_2 v
+   &= \tilde{x}
+\end{align*}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame{
+\frametitle{Sources}
+\begin{thebibliography}{3}
+
+\bibitem{NME}
+Seffen B{\"o}rm and Christian Mehl.
+Numerical Methods for Eigenvalue Problems.
+Walter de Gruyter GmbH \& Co.KG, Berlin/Boston, 2012.
+
+\bibitem{NLA}
+James E. Gentle.
+Numerical Linear Algebra for Applications in Statistics.
+Springer Science + Business Media, New York, 2003.
+
+\bibitem{MVA}
+Wolfgang K. H{\"a}rdle and L{\'e}opold Simar.
+Applied Multivariate Statistical Analysis.
+Springer-Verlag Gmbh, Berlin, Heidelberg, 2015.
+
+\end{thebibliography}
+}
 
 \end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
