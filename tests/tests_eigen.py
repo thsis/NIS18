@@ -93,14 +93,14 @@ threaded_tests(eigen.jacobi, 1000, 20, 15)
 failed = 0
 critical = 0
 print("Test QR-Method1:")
-threaded_tests(eigen.qrm, 1000, 10, 15, np.inf)
+threaded_tests(eigen.qrm, 1000, 10, 15, 1000)
 
 print("Test QR-Method2:")
 failed = 0
 critical = 0
-threaded_tests(eigen.qrm2, 1000, 20, 15, np.inf)
+threaded_tests(eigen.qrm2, 1000, 20, 15, 1000)
 
 failed = 0
 critical = 0
 print("Test QR-Method3:")
-threaded_tests(eigen.qrm3, 1000, 20, 15, np.inf)
+threaded_tests(eigen.qrm3, 1000, 20, 15, 1000)
