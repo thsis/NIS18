@@ -1,7 +1,24 @@
 """
-Animate the QR-Method.
+Animate the algorithms.
 
-Visualize the performed chasing accross iterations
+Visualize the performed chasing accross iterations.
+
+Each animation consists basically of 6 modular building blocks:
+    1. The algorithm (of course).
+    2. A setup for the figure and axis of the underlying pyplot plot.
+    3. An init() function that plots the basic canvas of each single plot.
+    4. An animate(i) function that plots the more intricate parts of the plot.
+    5. An animation.FuncAnimation instance that performs the animating.
+    6. A call to the animation.FuncAnimation's save()-method.
+
+Steps 2-6 are completely the same for each algorithm. So it would be a waste
+(and bad coding style) to repeat them for each algorithm. Thus we implement
+them inside a decorator, for which we will then only need to define the
+function that needs decorating.
+
+If that sounded like complete gibberish, there is an interesting and truly
+amusing explanation of decoraters on stackoverflow:
+https://stackoverflow.com/a/1594484
 
 Code for heatmap was inspired by: https://matplotlib.org/gallery/images_contours_and_fields/image_annotated_heatmap.html
 Code for animations was inspired by:
@@ -49,8 +66,24 @@ def setup(func):
 
 
 def animation_factory(func):
+    """
+    Decorator for a specific algorithm.
+
+    Parameter:
+        * func: a generator which can be called using `next` at least 180
+                times.
+    """
     def animator(savepath):
+        """
+        Create the animation and save the mp4-file.
+
+        Parameters:
+            * savepath: path to file.
+        """
         def algorithm_generator(*args, **kwargs):
+            """
+            Placeholder for algorithm. This is the part where decoration
+            happens."""
             return func(*args, **kwargs)
 
         fig, ax, hm, empty = setup(func)
@@ -86,9 +119,6 @@ def qrm1():
     """
     Create generator for transformed matrices after applying the QR-Method.
 
-    Parameters:
-        - X: 2D-numpy array. Matrix whose eigenvalues should be computed.
-        - maxiter: maximum number of iterations to be performed.
     Yields:
         - T: 2D-numpy array. Similar matrix to X.
     """
@@ -112,9 +142,6 @@ def qrm2():
     """
     Create generator for transformed matrices after applying the QR-Method.
 
-    Parameters:
-        - X: 2D-numpy array. Matrix whose eigenvalues should be computed.
-        - maxiter: maximum number of iterations to be performed.
     Yields:
         - T: 2D-numpy array. Similar matrix to X.
     """
@@ -137,13 +164,10 @@ qrm2(os.path.join(outpath, "qrm2.mp4"))
 def qrm3():
     """
     First compute similar matrix in Hessenberg form, then compute the
-    Eigenvalues and Eigenvectors using the QR-Method.
+    Eigenvalues and Eigenvectors using the accelerated QR-Method.
 
-    Parameters:
-        - X: square numpy ndarray.
-    Returns:
-        - Eigenvalues of A.
-        - Eigenvectors of A.
+    Yields:
+        * T - 2D numpy array of current iteration step.
     """
     # First stage: transform to upper Hessenberg-matrix.
     T = lin.hessenberg(X)
@@ -164,6 +188,13 @@ qrm3(os.path.join(outpath, "qrm3.mp4"))
 
 @animation_factory
 def jacobi():
+    """
+    Compute Eigenvalues and Eigenvectors for symmetric matrices using the
+    jacobi method.
+
+    Yields:
+        * A - 2D numpy array of current iteration step.
+    """
     A = copy.deepcopy(X)
     U = np.eye(A.shape[0])
     L = np.array([1])
