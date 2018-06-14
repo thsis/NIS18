@@ -41,11 +41,11 @@ X = np.dot(G, Lambda.dot(G.T))
 
 
 def plot_factory(func):
-    def plotter(savepath):
+    def plotter(savepath, **fig_kw):
         def algorithm_generator(*args, **kwargs):
             return func(*args, **kwargs)
 
-        fig, ax = plt.subplots(nrows=2, ncols=2)
+        fig, ax = plt.subplots(nrows=2, ncols=2, **fig_kw)
         algorithm_iterator = algorithm_generator()
         j = -1
 

@@ -1,5 +1,16 @@
 # Numerical Introductory Seminar 2018
 
+This is a project repository for the Humboldt-University course Numerical Introductory Seminar, where we demonstrate different algorithms which solve eigenvalue problems on symmetric, positive definite matrices.
+
+* In the `algorithms` directory you will find the implemented algorithms:
+    + Jacobi-Method.
+    + 3 Variants of the QR-Method.
+* In the `models` directory you will find different statistical procedures that can be solved by computing the eigenvectors of some covariance matrix. In particular:
+    + Principal Component Analysis (PCA).
+    + Fisher Linear Discriminant Analysis (LDA).
+* The `analysis` directory contains different script that investigate the accuracy, efficiency and the modus operandi of the different algorithms.
+* The `media` directory contains the plots and animations used for visualizing the obtained results.
+
 ## Getting started with Python
 To run the `Python` code from this repository you may need to install additional modules. You can do this by opening a terminal (`CTRL-ALT-T` on `Linux` or `MacOS`) or a command line (on `Windows` just push `HOME` and start typing `run`, you should see a black icon).
 
