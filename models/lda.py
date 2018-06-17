@@ -90,12 +90,14 @@ class LDA(object):
 
         self.eigenvalues, self.eigenvectors = eigen.jacobi(
             np.dot(Sb05, Sw_inv).dot(Sb05))
+        # Retransform vector of weights.
+        W = np.dot(np.linalg.inv(Sb05), self.eigenvectors)
 
         # Calculate inertia.
         self.inertia = self.eigenvalues / self.eigenvalues.sum()
 
         # Rotate the data.
-        self.rotated_data = self.data.dot(self.eigenvectors)
+        self.rotated_data = self.data.dot(W)
 
     def scree(self):
         """
