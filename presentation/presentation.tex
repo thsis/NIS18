@@ -284,12 +284,15 @@ $$\hat{a} = (\hat{a}_1, 0, \dots, 0)$$
 Using orthogonal transformations we can also rotate a vector in such a way that a specified element becomes 0 and only one other element in the vector is changed.
 
 \begin{columns}[onlytextwidth]
-\begin{column}{0.65\textwidth}
-	where the entries in the $p^{th}$ and $q^{th}$ rows and columns are
-$$\cos\theta = \frac{x_p}{||x||}$$
-
+\begin{column}{0.5\textwidth}
+$$
+Q = \begin{bmatrix}
+\cos\theta & \sin\theta \\
+-\sin\theta & \cos\theta
+\end{bmatrix}
+$$
 \end{column}
-\begin{column}{0.35\textwidth}
+\begin{column}{0.5\textwidth}
 	\includegraphics[scale=.5]{../media/plots/givens.png}
 \end{column}
 \end{columns}
@@ -313,6 +316,8 @@ V_{pq}(\theta) = \begin{bmatrix}
                        &  &  &  &  &  &  &  & 1 \\                      
                  \end{bmatrix}
 \end{equation}
+	where $\cos\theta = \frac{x_p}{||x||}$ and $\sin\theta = \frac{x_q}{||x||}$
+
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -361,10 +366,10 @@ The QR-Method is the most common algorithm for obtaining eigenvalues and eigenve
 \begin{equation}
 A = QR,
 \end{equation}
-where $Q$ is orthogonal and $R$ is upper triangular. \\
+where $Q$ is an orthogonal and $R$ is an upper triangular matrix. \\
 The QR iteration is:
 \begin{equation}
-  A^k = Q_{k-1}^{\prime} A_{k-1} Q_{k-1} = RQ
+  A^k = Q_{k-1}^{\prime} A_{k-1} Q_{k-1} = R_{k-1}Q_{k-1}
 \end{equation}
 
 The QR Method is of $O(n^3)$
@@ -548,15 +553,31 @@ First order condition:
 2S_B w - 2 \lambda S_W w &\stackrel{!}{=} 0 \notag \\
 S_{W}^{-1}S_B w &= \lambda w, \\
 \end{align*}
-which is known as a generalized Eigenvalue problem. We can also rewrite this as:
-$$S_B^{-\frac{1}{2}}S_{W}^{-1}S_B^{-\frac{1}{2}} w = \lambda w$$
 
-Which is a now just a normal Eigenvalue problem as before \hyperlink{LDA-prop}{\beamergotobutton{back}}.
+which is known as a generalized Eigenvalue problem. We can redefine
+\begin{align*}
+S_B &= S_B^{\frac{1}{2}} S_B^{\frac{1}{2}} \\
+v &= S_B^{\frac{1}{2}} w
+\end{align*}
+}
+\frame{
+\frametitle{LDA: proof}
+We then get:
+\begin{align*}
+S_{W}^{-1}S_B w &= \lambda w \\
+S_{W}^{-1}S_B^{\frac{1}{2}} \underbrace{S_B^{\frac{1}{2}} w}_v  &= \lambda w \\
+S_B^{\frac{1}{2}} S_{W}^{-1}S_B^{\frac{1}{2}} v  &=\lambda \underbrace{S_B^{\frac{1}{2}} w}_v
+\end{align*}
+We can also rewrite this as:
+$$S_B^{-\frac{1}{2}}S_{W}^{-1}S_B^{-\frac{1}{2}} v = \lambda v$$
+
+Which now an Eigenvalue problem of a symmetric, positive semidefinite matrix \hyperlink{LDA-prop}{\beamergotobutton{back}}.
+
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \frame[label=similarity_proof]{
 \frametitle{Eigenvalues of similar matrices}
-From the definition in (\ref{similarity-prop}) it follows immediately that a matrix $A$ with wigenvalues $\lambda_1, \dots, \lambda_n$ is similar to the matrix $diag(\lambda_1, \dots, \lambda_n)$.
+From the definition in (\ref{similarity-prop}) it follows immediately that a matrix $A$ with Eigenvalues $\lambda_1, \dots, \lambda_n$ is similar to the matrix $diag(\lambda_1, \dots, \lambda_n)$.
 
 If $A$ and $B$ are similar, as in (\ref{similarity-prop}), it holds:
 \begin{align*}
@@ -607,7 +628,7 @@ Remember:
 \begin{align*}
 Qx &= c_1 u + c_2 v - 2c_1 uuu^{\prime} - 2 c_2 v uu^{\prime} \\
    &= c_1 u + c_2 v - 2c_1 u^{\prime}uu - 2 c_2 u^{\prime} v u \\
-   &= -c_1 u + c_2 v
+   &= -c_1 u + c_2 v\\
    &= \tilde{x}
 \end{align*}
 }
