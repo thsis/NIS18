@@ -68,8 +68,11 @@ def plot_factory(func):
         cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
         fig.colorbar(hm, cax=cbar_ax)
 
-        fig.suptitle("Demonstrate {} on a {}x{} matrix".format(func.__name__,
-                                                               *X.shape))
+        sup_title = "Demonstrate {} on a {}x{} matrix".format(
+            func.__name__,
+            *X.shape)
+
+        fig.suptitle(sup_title)
         fig.savefig(savepath)
 
         return fig, ax

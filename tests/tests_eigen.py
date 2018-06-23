@@ -1,11 +1,15 @@
 """
 Automated tests for different algorithms.
 """
-
+import os
 import numpy as np
 import threading
+import pandas as pd
 from algorithms import eigen
 from scipy.stats import ortho_group
+from tqdm import trange, tqdm
+
+data_out = os.path.join("data", "accuracy_tests.csv")
 
 
 def get_test_matrix(dim):
@@ -56,8 +60,7 @@ def test_algo(algo, Ntests=1000, dim=3, *args, **kwargs):
             critical += 1
 
 
-
-def threaded_tests(algo, N, nWorkers=10, *args, **kwargs):
+def threaded_tests(algo, N, nWorkers=10, verbose=True, *args, **kwargs):
     global failed
     global critical
     global problematic
@@ -80,27 +83,30 @@ def threaded_tests(algo, N, nWorkers=10, *args, **kwargs):
     {} tests failed critically.
     """.format(failed, N, critical)
 
-    print(logstr)
+    if verbose:
+        print(logstr)
 
 
 # Tests
-problematic = []
-failed = 0
-critical = 0
-print("Test Jacobi Method:")
-threaded_tests(eigen.jacobi, 1000, 20, 15)
+results = {
+    "algorithm": [],
+    "dimension": [],
+    "maxiter": [],
+    "failed": []}
 
-failed = 0
-critical = 0
-print("Test QR-Method1:")
-threaded_tests(eigen.qrm, 1000, 10, 15, 1000)
+for algo in tqdm([eigen.jacobi, eigen.qrm, eigen.qrm2, eigen.qrm3]):
+    for dim in trange(3, 15):
+        for maxiter in 1000, 10000, 100000:
+            if algo.__name__ == eigen.jacobi:
+                maxiter = 1e-6
+            failed = 0
+            critical = 0
+            problematic = []
+            threaded_tests(algo, 1000, 20, False, dim, maxiter)
+            results["algorithm"].append(algo.__name__)
+            results["dimension"].append(dim)
+            results["maxiter"].append(maxiter)
+            results["failed"].append(failed)
 
-print("Test QR-Method2:")
-failed = 0
-critical = 0
-threaded_tests(eigen.qrm2, 1000, 20, 15, 1000)
-
-failed = 0
-critical = 0
-print("Test QR-Method3:")
-threaded_tests(eigen.qrm3, 1000, 20, 15, 1000)
+test_data = pd.DataFrame(results)
+test_data.to_csv(data_out)
