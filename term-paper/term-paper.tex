@@ -50,7 +50,7 @@
 \renewenvironment{abstract}{%
 
 \begin{center}
-\begin{minipage}{0.8\textwidth}
+\begin{minipage}{0.9\textwidth}
 \rule{\textwidth}{1pt}}
 {\par\noindent\rule{\textwidth}{1pt}
 \end{minipage}
@@ -95,14 +95,13 @@
 
 \section{Motivation}
 
+\begin{singlespacing}
 \begin{abstract}
-  Diese Dokumentation enth"alt eine sortierte Liste der wichtigsten
-  \LaTeX--Befehle. Die einzelnen Listeneintr"age sind untereinander
-  durch viele Querverweise verkettet, die ein Auffinden inhaltlich
-  zusammengeh"origer Informationen erheblich erleichtern.
+\small
+Eigenvalues and eigenvectors are often the solution to multidimensional optimization problems, however computing them by hand for anything but trivial matrices is most of the time infeasible or inpractical. To this extend we would like to deploy an automated procedure which yields the correct eigenvectors and eigenvalues. We demonstrate the relevance of eigenvalues and eigenvectors by revising two applications from statistics, Principal Component Analysis and Fisher's Linear Discriminant Analysis, which we follow up by investigating four algorithms suited for eigenvalue problems. Finally we provide a compound solution that takes advantage of each algorithms strengths.  
 \end{abstract}
 \vspace{3mm}
-
+\end{singlespacing}
 
 Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
@@ -318,20 +317,23 @@ V_{pq}(\theta) = \begin{bmatrix}
 
 % ==============================================================================
 \section{Conclusion}
+\begin{figure}
+\caption{Decision process of final eigenvalue routine}
 \begin{tikzpicture}
 \node (in1) [io] {Input: matrix A};
 \node (dec_sym) [decision, below of=in1, yshift=-0.5cm] {Is A symmetric?};
-\node (algo1) [algo, below of=dec_sym, xshift=-2cm, yshift=-1.5cm] {\texttt{Jacobi}};
-\node (dec_small) [decision, right of=algo1, xshift=2cm] {rows of A $\leq$ 13?};
-\node (algo2) [algo, below of=dec_small, xshift=-2cm, yshift=-1cm] {\texttt{QRM3}};
-\node (algo3) [algo, below of=dec_small, xshift=2cm, yshift=-1cm] {\texttt{QRM2}};
+\node (algo1) [algo, below of=dec_sym, xshift=-2cm, yshift=-1cm] {\texttt{Jacobi}};
+\node (dec_small) [decision, below of=dec_sym, xshift=2cm, yshift=-1cm] {rows of A $\leq$ 13?};
+\node (algo2) [algo, below of=dec_small, xshift=-1cm, yshift=-1cm] {\texttt{QRM3}};
+\node (algo3) [algo, below of=dec_small, xshift=1cm, yshift=-1cm] {\texttt{QRM2}};
 
 \draw [arrow] (in1) -- (dec_sym);
-\draw [arrow] (dec_sym) -- node {yes} (algo1);
-\draw [arrow] (dec_sym) -- node {no} (dec_small);
-\draw [arrow] (dec_small) -- node {yes} (algo2);
-\draw [arrow] (dec_small) -- node {no} (algo3);
+\draw [arrow] (dec_sym) -- node[anchor=east] {yes} (algo1);
+\draw [arrow] (dec_sym) -- node[anchor=west] {no} (dec_small);
+\draw [arrow] (dec_small) -- node[anchor=east] {yes} (algo2);
+\draw [arrow] (dec_small) -- node[anchor=west] {no} (algo3);
 \end{tikzpicture}
+\end{figure}
 % ==============================================================================
 \newpage
 \section{Appendix}
