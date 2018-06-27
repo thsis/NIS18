@@ -24,8 +24,7 @@
 \pagestyle{fancy}
 \setlength{\headheight}{15pt}
 
-\usepackage{algorithmicx}
-\usepackage[noend]{algpseudocode}
+\usepackage{algpseudocode}
 \usepackage{algorithm}
 
 \usepackage{../presentation/colordef}
@@ -97,34 +96,36 @@
 
 \begin{singlespacing}
 \begin{abstract}
+\textbf{Abstract} \\
 \small
 Eigenvalues and eigenvectors are often the solution to multidimensional optimization problems, however computing them by hand for anything but trivial matrices is most of the time infeasible or inpractical. To this extend we would like to deploy an automated procedure which yields the correct eigenvectors and eigenvalues. We demonstrate the relevance of eigenvalues and eigenvectors by revising two applications from statistics, Principal Component Analysis and Fisher's Linear Discriminant Analysis, which we follow up by investigating four algorithms suited for eigenvalue problems. Finally we provide a compound solution that takes advantage of each algorithms strengths.  
 \end{abstract}
 \vspace{3mm}
 \end{singlespacing}
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+For many statistical applications eigenvectors provide a formidable solution. Be it dimensionality reduction in terms of a Principal Component Analysis or classification by Fisher's Linear Discriminant Analysis, both come in the guise of optimization problems. But what are eigenvalues and eigenvectors? 
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-\cite{MVA}
-\cite{NME}
-\cite{lapack}
 If $A$ is an $n \times n$ matrix, $v$ is a non-zero vector and $\lambda$ is a scalar, such that
+
 \begin{equation}
 \label{eigenvalue-def}
 Av = \lambda v
 \end{equation}
+
 then $v$ is called an \textit{eigenvector} and $\lambda$ is called an \textit{eigenvalue} of the matrix $A$.
 An eigenvalue of A is a root of the characteristic equation,
+
 \begin{equation}
 \label{eigenvalue-solve}
-det\left(A - \lambda I \right) = 0
+det\left(A - \lambda I \right) = 0.
 \end{equation}
 
+Geometrically speaking, we require a vector which, when multiplied by matrix $A$, will not get rotated but only elongated by a factor $\lambda$.
 
+When confronted with high-dimensional data an analyst often wishes to find a lower-dimensional representation, while conserving as much of the structure as possible.
+
+
+In section two we lay out the mathematical foundations for the operations we are about to perform. In particular, we will try to reformulate any complicated eigenvalue problem into a straightforward one by diagonalizing the matrix in question, without altering the eigenvalues we would like to compute. We follow these justifications by proposing two main algorithms for computing eigenvalues, first the Jacobi-Method for symmetric matrices, then the QR-Method for arbitrary square matrices in section 3. Additionally, for the QR-Method we define two extensions which try to increase the initial QR-algorithm's speed. In section 4 we will analyse the implemented routines by critically reflecting upon the accuracy of the obtained results as well as their efficiency. In the final section we provide a final algorithm which combines the strengths of the defined procedures by chosing the algorithm that is most fit for the underlying problem.
 % ==============================================================================
 \section{Similarity Transformations}
 
@@ -176,15 +177,13 @@ Using orthogonal transformations we can also rotate a vector in such a way that 
 \begin{equation}
 \label{givens-rotation}
 V_{pq}(\theta) = \begin{bmatrix}
-                      1 &  &  &  &  &  &  &  &  \\
-                       & \ddots &  &  &  &  & &  &  \\
-                       &  & 1 &  &  &  &  &  &  \\
-                       &  &  & \cos\theta &  & \sin\theta &  &  &  \\
-                       &  &  &  & \ddots &  &  &  &  \\
-                       &  &  & -\sin\theta &  & \cos\theta &  &  &  \\
-                       &  &  &  &  &  & 1 &  &  \\
-                       &  &  &  &  &  &  & \ddots &  \\
-                       &  &  &  &  &  &  &  & 1 \\                      
+                      1 \\
+                        & \ddots \\
+                        &        & \cos\theta    &        & \sin\theta  \\
+                        &        &               & \ddots     \\
+                        &        & -\sin\theta   &        & \cos\theta   \\
+                        &        &               &        &            &  \ddots \\
+                        &        &               &        &            &         & 1 \\                      
                  \end{bmatrix}
 \end{equation}
 	where $\cos\theta = \frac{x_p}{||x||}$ and $\sin\theta = \frac{x_q}{||x||}$
@@ -197,10 +196,10 @@ V_{pq}(\theta) = \begin{bmatrix}
 \subsection{Jacobi Method}
 
 
-\begin{algorithm}[H]
+\begin{algorithm}
 \caption{\texttt{jacobi}}
 \label{j-algo}
-\begin{algorithmic}
+\begin{algorithmic}[1]
   \Require symmetric matrix $A$
   \Ensure $0 < precision < 1$
   \Statex \textbf{initialize: } $L \gets A$; $U \gets I$; $L_{max} \gets 1$
@@ -212,8 +211,8 @@ V_{pq}(\theta) = \begin{bmatrix}
     \State $V_{i, i}, V_{j, j} \gets \cos \alpha$; $V_{i, j}, V_{j, i} \gets -\sin \alpha, \sin \alpha$
     \State $A \gets V^{\prime} A V$; $U \gets UV$
 
-  \EndWhile
-  \Return $diag(A), U$
+  \EndWhile\\
+  \Return $diag(A),\; U$
 \end{algorithmic}
 \end{algorithm}
 
@@ -229,10 +228,10 @@ V_{pq}(\theta) = \begin{bmatrix}
 % ------------------------------------------------------------------------------
 \subsection{QR-Method}
 
-\begin{algorithm}[H]
+\begin{algorithm}
 \caption{\texttt{QRM1}}
 \label{qr1-meth}
-  \begin{algorithmic}
+  \begin{algorithmic}[1]
     \Require square matrix $A$
     \Statex \textbf{initialize: } $conv \gets False$
     \While{not $conv$}
@@ -242,8 +241,8 @@ V_{pq}(\theta) = \begin{bmatrix}
         \State $conv \gets \texttt{True}$
         \Statex
       \EndIf
-    \EndWhile
-    \Return $diag\left(A\right), Q$
+    \EndWhile\\
+    \Return $diag\left(A\right),\; Q$
   \end{algorithmic}
 \end{algorithm}
 
@@ -258,10 +257,10 @@ V_{pq}(\theta) = \begin{bmatrix}
 \subsubsection{Hessenberg Variant}
 
 
-\begin{algorithm}[H]
+\begin{algorithm}
 \caption{\texttt{QRM2}}
 \label{qr2-meth}
-\begin{algorithmic}
+\begin{algorithmic}[1]
   \Require square matrix $A$
   \State $A \gets \texttt{hessenberg(}A\texttt{)}$
   \State continue with: \Call {QRM1} A
@@ -278,8 +277,8 @@ V_{pq}(\theta) = \begin{bmatrix}
 
 \subsubsection{Accelerated Variant}
 
-\begin{algorithm}[H]
-\begin{algorithmic}
+\begin{algorithm}
+\begin{algorithmic}[1]
 \caption{\texttt{QRM3}}
 \Require square matrix $A \in \mathbb{R}^{p \times p}$
 \State $T \gets \texttt{hessenberg}(A),\ conv \gets False$
@@ -289,8 +288,8 @@ V_{pq}(\theta) = \begin{bmatrix}
     \If{$T$ is diagonal}
         \State $conv \gets True$
     \EndIf
-\EndWhile
-\Return $diag\left(T\right), Q$
+\EndWhile\\
+\Return $diag\left(T\right),\; Q$
 \end{algorithmic}
 \end{algorithm}
 
@@ -306,7 +305,16 @@ V_{pq}(\theta) = \begin{bmatrix}
 
 % ------------------------------------------------------------------------------
 \subsection{Accuracy}
+\begin{table}
+\caption{Unit tests accross matrix-sizes}
+\begin{tabular}{cc}
+awesome & sauce \\
+\hline
+nothing & to \\
+see & here
 
+\end{tabular}
+\end{table}
 % ------------------------------------------------------------------------------
 \subsection{Efficiency}
 
