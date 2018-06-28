@@ -7,7 +7,7 @@ from threading import Thread
 import pandas as pd
 from algorithms import eigen
 from scipy.stats import ortho_group
-from tqdm import trange, tqdm
+from tqdm import trange
 
 data_out = os.path.join("data", "accuracy_tests.csv")
 
@@ -66,7 +66,36 @@ class AlgoTest(object):
 
 
 # Unit tests
-algotest = AlgoTest(algo=eigen.qrm2, dim=3, n_tests=1000, jobs=10, maxiter=20)
-algotest.run()
-algotest.failed
-algotest.result
+tests = {"algorithm": [],
+         "dimension": [],
+         "maxiter": [],
+         "failed": []}
+
+# Jacobi-Method
+for dim in trange(3, 11):
+    algo_test = AlgoTest(algo=eigen.jacobi, dim=dim, jobs=20)
+
+    algo_test.run()
+    tests["algorithm"].append(eigen.jacobi.__name__)
+    tests["dimension"].append(dim)
+    tests["maxiter"].append(None)
+    tests["failed"].append(algo_test.result)
+
+
+# QR-Method
+for algo in eigen.qrm, eigen.qrm2, eigen.qrm3:
+    print("Start tests for", algo.__name__)
+    for maxiter in 100, 1000, 10000:
+        for dim in trange(3, 11):
+            algo_test = AlgoTest(algo=algo,
+                                 dim=dim,
+                                 maxiter=maxiter,
+                                 jobs=20)
+            algo_test.run()
+            tests["algorithm"].append(algo.__name__)
+            tests["dimension"].append(dim)
+            tests["maxiter"].append(maxiter)
+            tests["failed"].append(algo_test.result)
+
+
+tests
