@@ -27,6 +27,9 @@
 \usepackage{algpseudocode}
 \usepackage{algorithm}
 
+\usepackage{cite}
+\usepackage[nottoc,numbib]{tocbibind}
+
 \usepackage{../presentation/colordef}
 \usepackage{../presentation/lvblisting}
 
@@ -122,10 +125,43 @@ det\left(A - \lambda I \right) = 0.
 
 Geometrically speaking, we require a vector which, when multiplied by matrix $A$, will not get rotated but only elongated by a factor $\lambda$.
 
-When confronted with high-dimensional data an analyst often wishes to find a lower-dimensional representation, while conserving as much of the structure as possible.
+When confronted with a high-dimensional data matrix $X \in \mathbb{R}^{n \times m}$ an analyst often wishes to find a lower-dimensional representation, while conserving as much of the structure as possible. One way of achieving this goal is to choose a standardized linear combination of features that aim to maximize the variance of the projection $\delta^{\prime} X$. We can formalize this as
+
+\begin{equation}
+	\label{pca_obj}
+    	max\ \delta^{\prime} Var \left(X\right) \delta \; s.t. \; \sum \delta_i^2 = 1.
+\end{equation}
+
+where $X \in \mathbb{R}^{n \times m}; m,n \in \mathbb{N}; \delta \in \mathbb{R}^m$. The Lagrangean that corresponds to the constrained maximization problem in \ref{pca_obj} is
+
+$$
+    \mathcal{L}(Var \left(X\right), \delta, \lambda) =
+    \delta^{\prime} Var \left(X\right) \delta - \lambda \left(\delta^{\prime}\delta - 1\right),
+$$
+where $\lambda \in \mathbb{R}^m$
+
+Taking derivatives we obtain the first order condition:
+	\begin{align}
+	\frac{\partial \mathcal{L}}{\partial \delta} &\stackrel{!}{=} 0 \notag\\
+	2Var(X)\delta - 2\lambda_k \delta &\stackrel{!}{=} 0 \notag\\
+	Var(X)\delta  &= \lambda_k \delta \notag
+	\end{align}
+
+Which is now reduced to a common Eigenvalue problem as proposed in \ref{eigenvalue-def}.
 
 
-In section two we lay out the mathematical foundations for the operations we are about to perform. In particular, we will try to reformulate any complicated eigenvalue problem into a straightforward one by diagonalizing the matrix in question, without altering the eigenvalues we would like to compute. We follow these justifications by proposing two main algorithms for computing eigenvalues, first the Jacobi-Method for symmetric matrices, then the QR-Method for arbitrary square matrices in section 3. Additionally, for the QR-Method we define two extensions which try to increase the initial QR-algorithm's speed. In section 4 we will analyse the implemented routines by critically reflecting upon the accuracy of the obtained results as well as their efficiency. In the final section we provide a final algorithm which combines the strengths of the defined procedures by chosing the algorithm that is most fit for the underlying problem.
+\begin{equation}
+\label{pca_sol}
+	Y = \Gamma^{\prime} \left(X - \mu\right)
+\end{equation}
+
+where $Y \in \mathbb{R}^{n \times m}$ is the matrix of rotations, 
+	  $\Gamma \in \mathbb{R}^{m \times m}$ is the matrix of eigenvectors,
+	  $\mu \in \mathbb{R}^m$ is the vector of sample means. \cite{MVA}
+
+
+In section two we lay out the mathematical foundations for the operations we are about to perform. In particular, we will try to reformulate any complicated eigenvalue problem into a straightforward one by diagonalizing the matrix in question, without altering the eigenvalues we would like to compute. We follow these justifications by proposing two main algorithms for computing eigenvalues, first the Jacobi-Method for symmetric matrices, then the QR-Method for arbitrary square matrices in section 3. Additionally, for the QR-Method we define two extensions which try to increase the initial QR-algorithm's speed.
+For all algorithms we provide implementations in the \texttt{Python}-programming-language \cite{python, matplotlib, scipy}. In section 4 we will analyse the implemented routines by critically reflecting upon the accuracy of the obtained results as well as their efficiency. In the final section we provide a final algorithm which combines the strengths of the defined procedures by chosing the algorithm that is most fit for the underlying problem.
 % ==============================================================================
 \section{Similarity Transformations}
 
@@ -358,9 +394,7 @@ see & here
 \subsection{Analysis: Unit tests}
   \lstinputlisting[language=Python]{../tests/tests_eigen.py}
 % ==============================================================================
-
-
-\bibliographystyle{plain}
+\bibliographystyle{apalike}
 \bibliography{references}
 
 \end{document}
