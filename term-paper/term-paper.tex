@@ -33,6 +33,8 @@
 \usepackage{../presentation/colordef}
 \usepackage{../presentation/lvblisting}
 
+\usepackage{wrapfig}
+
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, arrows}
 
@@ -147,7 +149,7 @@ Taking derivatives we obtain the first order condition:
 	Var(X)\delta  &= \lambda_k \delta \notag
 	\end{align}
 
-Which is now reduced to a common Eigenvalue problem as proposed in \ref{eigenvalue-def}.
+Which is now reduced to a common Eigenvalue problem as posed in (\ref{eigenvalue-def}).
 
 
 \begin{equation}
@@ -165,6 +167,8 @@ For all algorithms we provide implementations in the \texttt{Python}-programming
 % ==============================================================================
 \section{Similarity Transformations}
 
+In general we want to reformulate the eigenvalue problem of a complicated matrix into an eigenvalue problem of a simple matrix, which yields the same eigenvalues. Simple matrices in our case will be diagonal matrices, since with them it is possible to identify their eigenvalues simply as entries on the main diagonal. Such a transformation that conserves the eigenvalues of a matrix is called a \textit{similarity transformation}. 
+
 Two $n \times n$ matrices $A$ and $B$ are called \textit{similar} if there exists an invertible matrix $P$ such that
 
 \begin{equation}
@@ -172,21 +176,24 @@ Two $n \times n$ matrices $A$ and $B$ are called \textit{similar} if there exist
 A = P^{-1} B P.
 \end{equation}
 
-This transformation defined in \ref{similarity} is also called a \textit{similarity transformation}. It is obvious that the similarity relationship is commutative as well as transitive. If $A$ and $B$ are similar, it holds that
+It is obvious that the similarity relationship is commutative as well as transitive. If $A$ and $B$ are similar, it holds that
 
 \begin{align*}
 B - \lambda I &= P^{-1} B P - \lambda P^{-1} I P \notag \\
               &= A - \lambda I.
 \end{align*}
+
  Hence $A$ and $B$ have the same eigenvalues. This fact also follows immediately from the transitivity of the similarity relationship and the fact that a matrix is similar to the diagonal matrix formed from its eigenvalues, as stated in the spectral-decomposition. Important types of similarity transformations are based around orthogonal matrices. If $Q$ is orthogonal and
  
 $$ A = Q^{\prime} B Q, $$
 
-$A$ and $B$ are called \textit{orthogonally similar}.
+$A$ and $B$ are called \textit{orthogonally similar} \cite{NLA}. We will use \textit{orthogonal similarity transformations} to diagonalize matrices we wish to know the eigenvalues of. 
 
 
 % ------------------------------------------------------------------------------
 \subsection{Householder-Reflections}
+
+Our goal is still to diagonalize a matrix in order to programmatically extract it's eigenvalues. So far we have seen that there exist such transformations that conserve the eigenvalues of a given matrix. However, we require transformations that, additionally, eliminate non-zero entries on the off-diagonal elements of said matrix. A greedy technique, that eliminates all but the first elements of a vector is proposed in the form of Householder-Reflections.
 
 Let $u$ and $v$ be orthonormal vectors and let $x$ be a vector in the space spanned by $u$ and $v$, such that
 $$x = c_1 u + c_2 + v$$ 
@@ -195,21 +202,62 @@ $$\tilde{x}=-c_1 u + c_2 v$$
 is a \textit{reflection} of x through the line difined by the vector u. Now consider the matrix
 
 \begin{equation}
-Q = I - 2 uu^{\prime}.
+P = I - 2 uu^{\prime}.
 \end{equation}
 
+Note that
 
 \begin{align*}
-Qx &= c_1 u + c_2 v - 2c_1 uuu^{\prime} - 2 c_2 v uu^{\prime} \\
+Px &= c_1 u + c_2 v - 2c_1 uuu^{\prime} - 2 c_2 v uu^{\prime} \\
    &= c_1 u + c_2 v - 2c_1 u^{\prime}uu - 2 c_2 u^{\prime} v u \\
    &= -c_1 u + c_2 v\\
-   &= \tilde{x}
+   &= \hat{x}.
 \end{align*}
+
+The matrix $P$ is called a reflector. The usefulness of Householder-Reflections stems from the fact that it is easy to transform a vector of the form
+
+$$x = (x_1, x_2, \dots, x_n)$$
+
+into a vector
+$$\hat{x} = (\hat{x}_1, 0, \dots, 0).$$
+
+If $Qx = \hat{x}$, then $||x||_2 = ||\hat{x}||_2$ and thus $\hat{x_1} = \pm ||x||_2$, since it is the only non-zero entry. To construct the reflector let
+\begin{equation}
+\label{house-con}
+v = (x_1 + sign(x_1)||x||_2, x2, \dots, x_n)
+\end{equation}
+and $u = \frac{v}{||v||_2}$ \cite{NLA}. We use the $sign$-function, which simply returns the sign of its argument in order to avoid the numerical problem known as \textit{catastrophic cancellation}. It can occur when adding two very close, but different, floating point numbers of differing signs. In some unfortunate cases both of these numbers get represented by the same computer number and, because of their opposing signs cancel each other out. In our case this would mean, that we reflect the vector onto the origin. Fortunately, by making use of the sign function we can make sure that both summands will share the same sign, thus mitigating any concerns about catastrophic cancellation.
+
+We use reflectors to compute the so called $QR$ factorization of an aribitrary square matrix $A \in \mathbb{R}^{n \times n}$.
+
+\begin{equation}
+\label{QR-prop}
+A = QR
+\end{equation}
+
+where $Q$ is orthogonal and $R$ is upper triangular. We use Householder transformations to reflect the $i^{th}$ column and produce zeros below the $(i, i)$ element. The QR-factorization of a matrix $A \in \mathbb{R}^5$ would therefore consist of five Householder-reflections with $Q=P_5 P_4 P_3 P_2 P_1$. The number of computations for the \textit{QR} factorization in this fashion is $2n^3 / 3$ multiplications and $2n^3 / 3$ additions \cite{NLA}.  
 % ------------------------------------------------------------------------------
 \subsection{Givens-Rotations}
 
-Using orthogonal transformations we can also rotate a vector in such a way that a specified element becomes 0 and only one other element in the vector is changed.
+\begin{wrapfigure}[7]{r}{0.3\textwidth}
+\centering
+\caption{Rotation of \textit{x}}
+\includegraphics[scale=0.5]{../media/plots/givens.png}
+\end{wrapfigure}
 
+Another way of forming the \textit{QR}-factorization is by using orthogonal transformations which rotate a vector in a way such that a specific element becomes 0 and only one other element in the vector being changed. These transformations are called \textit{Givens transformations, Givens Rotations} or \textit{Jacobi transformations}
+
+Using orthogonal transformations we can also rotate a vector in such a way that a specified element becomes 0 and only one other element in the vector is changed. The basic idea can be seen in a two-dimensional space. We wish to rotate the vector $x = (x_1, x_2)$ to $\tilde{x} = (\tilde{x_1}, 0)$ as with a reflector.
+
+It is easy to see that the orthogonal matrix 
+$$Q=\begin{bmatrix}
+\cos\theta & \sin\theta \\
+-\sin\theta & \cos\theta
+\end{bmatrix}$$
+
+performs the desired rotation, if $\cos\theta = \frac{x_1}{||x||_2}$ and $\sin\theta = \frac{x_2}{||x||_2}$
+
+In general, we can construct an orthogonal $matrix V_{pq}$, that will transform the vector $$x = (x_1,\dots, x_p, \dots x_q, \dots, x_n)$$ to $$\tilde{x} = (x_1,\dots, \tilde{x}_p, \dots 0, \dots, x_n)$$. The matrix that does this is
 \begin{equation}
 \label{givens-rotation}
 V_{pq}(\theta) = \begin{bmatrix}
@@ -222,15 +270,63 @@ V_{pq}(\theta) = \begin{bmatrix}
                         &        &               &        &            &         & 1 \\                      
                  \end{bmatrix}
 \end{equation}
-	where $\cos\theta = \frac{x_p}{||x||}$ and $\sin\theta = \frac{x_q}{||x||}$
-
-
+	where $\cos\theta = \frac{x_p}{||x||}$ and $\sin\theta = \frac{x_q}{||x||}.$
+	
+A rotation matrix is therefore the same as an identitiy matrix, in which we change four elements \cite{NME}. We will use Givens rotations primarily in the Jacobi-Method.
 
 % ==============================================================================
 \section{Algorithms}
 % ------------------------------------------------------------------------------
 \subsection{Jacobi Method}
 
+The \textit{Jacobi-Method} for computing the eigenvalues of a symmetric matrix $A \in \mathbb{R}^{n \times n}$ deploys a sequence of orthogonal similarity transformations that eventually results in
+$$ A = P \Lambda P^{-1} $$
+or $$\Lambda = P^{-1} A P$$,
+
+where $\Lambda$ is diagonal and $P$ consists of a sequence of matrix multiplications $P = \prod\limits_{k=1}^{K} V_{p_k, q_k}(\theta_k)$ and $V_{p_k, q_k}(\theta_k)$ is of the form proposed in (\ref{givens-rotation}). More specific the \textit{Jacobi iteration} is
+
+\begin{equation}
+A^{(k)} = V^{\prime}_{p_k, q_k}(\theta_k) A^{(k-1)} V_{p_k, q_k}(\theta_k),
+\end{equation}
+
+where $p_k, q_k$ and $\theta_k$ are chosen such that $A^{k}$ resembles more a diagonal matrix than $A^{k-1}$.  Specifically they will be chosen as to reduce the sum of squares of the off-diagonal elements. As we saw in (\ref{givens-rotation}) it is easy to chose an angle $\theta_k$ in order to introduce a zero in a single Givens rotation. Here we use the rotations in the context of a similarity transformation, so it is a little more complicated.
+
+We require that $a_{pq}^{(k)} = 0$, this implies
+ 
+\begin{equation}
+\label{theta-troubles}
+a^{(k-1)}_{pq} (\cos^2\theta - \sin^2\theta) + \left( a^{(k-1)}_{pp} - a^{(k-1)}_{qq} \right) \cos\theta \sin\theta = 0.
+\end{equation}
+
+We can use the trigonometric identities
+\begin{align*}
+\cos(2\theta) &= \cos^2 \theta \sin^2 \theta \\
+\sin(2\theta) &= 2 \cos\theta \sin\theta \\
+\tan(2\theta) &= \frac{\sin(2\theta)}{\cos(2\theta)},
+\end{align*}
+
+in (\ref{theta-troubles}) we have
+$$\tan(2\theta) = \frac{2a^{(k-1)}_{pq}}{a^{(k-1)}_{pp} - a^{(k-1)}_{qq}}.$$ \cite{NLA}
+
+From this we can retrieve the angle and obtain the rotation matrix in each iteration.
+
+The algorithm converges if the off-diagonal elements are sufficiently small. The best index pair at a given iteration is the pair $(p, q)$ that satisfies
+ 
+\[
+|a^{(k-1)}_{pq}| = \mathop{\max_{i<j}} |a^{(k-1)}_{ij}|.
+\]
+
+If this choice is made, the Jacobi Method can be shown to converge \cite{NLA}.
+
+\begin{figure}
+\begin{center}
+\caption{\href {https://github.com/thsis/NIS18/tree/master/media/plots}{Progress Jacobi-Method}  \protect\includegraphics[scale=0.05]{qletlogo.pdf}}
+  \includegraphics[scale=0.6]{../media/plots/jacobi.png}
+\end{center}
+\end{figure}
+
+
+Figure \ref{j-algo} visualizes the progress of the \textit{Jacobi}-method on a symmetric $5 \times 5$ matrix. As we can see the matrix converges to a diagonal matrix already after 10 iterations.
 
 \begin{algorithm}
 \caption{\texttt{jacobi}}
@@ -251,15 +347,6 @@ V_{pq}(\theta) = \begin{bmatrix}
   \Return $diag(A),\; U$
 \end{algorithmic}
 \end{algorithm}
-
-
-\begin{figure}
-\begin{center}
-\caption{\href {https://github.com/thsis/NIS18/tree/master/media/plots}{Progress Jacobi-Method}  \protect\includegraphics[scale=0.05]{qletlogo.pdf}}
-  \includegraphics[scale=0.6]{../media/plots/jacobi.png}
-\end{center}
-\end{figure}
-
 
 % ------------------------------------------------------------------------------
 \subsection{QR-Method}
@@ -365,6 +452,7 @@ see & here
 % ==============================================================================
 \section{Conclusion}
 \begin{figure}
+\centering
 \caption{Decision process of final eigenvalue routine}
 \begin{tikzpicture}
 \node (in1) [io] {Input: matrix A};
