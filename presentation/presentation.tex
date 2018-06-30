@@ -103,7 +103,7 @@ Humboldt--University Berlin \\}
 		\label{pca_sol}
 			Y = \Gamma^{\prime} \left(X - \mu\right)
 		\end{equation}
-		where $Y \in \mathbb{R}^{n \times m}$ is the matrix of rotations, 
+		where $Y \in \mathbb{R}^{n \times m}$ is the matrix of rotations,
 		      $\Gamma \in \mathbb{R}^{m \times m}$ is the matrix of eigenvectors,
 		      $\mu \in \mathbb{R}^m$ is the vector of sample means.
 	\end{itemize}
@@ -127,7 +127,7 @@ Humboldt--University Berlin \\}
 		\label{lda_obj}
   			max \ \frac{w^{\prime}S_B w}{w^{\prime}S_W w},
 		\end{equation}
-	where 
+	where
 	\begin{align*}
   	S_B &= \sum\limits_{c}^{C} (\mu_c - \mu)(\mu_c - \mu)^{\prime}, \\
   	S_W &= \sum\limits_{c}^{C} \sum\limits^{n}_{i=1} (x_i - \mu_c)(x_i - \mu_c)^{\prime}
@@ -200,9 +200,9 @@ A = \begin{bmatrix}
         0    & 0    & 1    & \cdots & 0 \\
              &      &      & \ddots & \\
         0    & 0    & 0    & \dots  & 1 \\
-        -a_0 & -a_1 & -a_2 & \dots  & -a_{p-1} \\  
+        -a_0 & -a_1 & -a_2 & \dots  & -a_{p-1} \\
     \end{bmatrix}
-\end{equation} 
+\end{equation}
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -256,9 +256,9 @@ If the two matrices $A$ and $B$ are similar, then they also share the same eigen
 \frame[label=householder_prop]{
 \frametitle{Householder Reflections}
 Let $u$ and $v$ be orthonormal vectors and let $x$ be a vector in the space spanned by $u$ and $v$, such that
-$$x = c_1 u + c_2 + v$$ 
-for some scalars $c_1$ and $c_2$. The vector 
-$$\tilde{x}=-c_1 u + c_2 v$$ 
+$$x = c_1 u + c_2 + v$$
+for some scalars $c_1$ and $c_2$. The vector
+$$\tilde{x}=-c_1 u + c_2 v$$
 is a \textit{reflection} of x through the line difined by the vector u. Now consider the matrix
 
 \begin{equation}
@@ -273,7 +273,7 @@ $$Qx = \tilde{x}$$
 \frametitle{Householder Reflections}
 We will use Householder-Reflections to tranform a vector
 $$a = (a_1, \dots, a_n)$$
-into 
+into
 $$\hat{a} = (\hat{a}_1, 0, \dots, 0)$$
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -313,7 +313,7 @@ V_{pq}(\theta) = \begin{bmatrix}
                        &  &  & -\sin\theta &  & \cos\theta &  &  &  \\
                        &  &  &  &  &  & 1 &  &  \\
                        &  &  &  &  &  &  & \ddots &  \\
-                       &  &  &  &  &  &  &  & 1 \\                      
+                       &  &  &  &  &  &  &  & 1 \\
                  \end{bmatrix}
 \end{equation}
 	where $\cos\theta = \frac{x_p}{||x||}$ and $\sin\theta = \frac{x_q}{||x||}$
@@ -415,7 +415,7 @@ $$
  0 & 0 &  0 & X & X & X & X \\
  0 & 0 & 0 & 0 & X & X & X \\
  0 & 0 & 0 & 0 & 0 & X & X \\
-\end{bmatrix} 
+\end{bmatrix}
 $$
 \end{column}
 \end{columns}
@@ -438,10 +438,10 @@ $$
   \frametitle{QRM2 Visualized}
   \begin{center}
     \movie[width=8cm, height=5.35cm]{\includegraphics[width=8cm, height=5.35cm]{Figures/placeholder.jpg}}{Figures/qrm_symmetric.mp4}
-    
+
     \href {https://github.com/thsis/NIS18/blob/master/analysis/animation.py}{QR-Method} \includegraphics[scale=0.05]{qletlogo.pdf}
   \end{center}
-      
+
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Accelerated Variant}
@@ -507,7 +507,7 @@ Repeat the procedure $1000$ times.
 \begin{center}
 \caption{\href {https://github.com/thsis/NIS18/blob/master/tests/tests_eigen.py}{Unit-tests: Iterations}  \protect\includegraphics[scale=0.05]{qletlogo.pdf}}
   \includegraphics[width=11.5cm, height=5cm]{../media/plots/iterations_boxplot.png}
-  	
+
 \end{center}
 \end{figure}
 }
@@ -522,7 +522,7 @@ The objective of \hyperlink{PCA-prop}{\beamergotobutton{PCA}}:
 	$$
 Corresponding Lagrangean:
     $$
-    \mathcal{L}(Var \left(X\right), \delta, \lambda) = 
+    \mathcal{L}(Var \left(X\right), \delta, \lambda) =
     \delta^{\prime} Var \left(X\right) \delta - \lambda \left(\delta^{\prime}\delta - 1\right),
     $$
     where $\lambda \in \mathbb{R}^m$ \\
@@ -588,7 +588,7 @@ B - \lambda I &= P^{-1} B P - \lambda P^{-1} I P \notag \\
 \begin{equation*}
 A = Q^{\prime} B Q,
 \end{equation*}
-$A$ and $B$ are said to be \textit{orthogonally similar} \hyperlink{similarity_prop}{\beamergotobutton{back}}. 
+$A$ and $B$ are said to be \textit{orthogonally similar} \hyperlink{similarity_prop}{\beamergotobutton{back}}.
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \frame[label=companion_exmpl]{
@@ -597,12 +597,12 @@ Demonstrate that the companion matrix \hyperlink{companion_prop}{\beamergotobutt
 \begin{enumerate}
   \item corresponds to a polynomial.
   \item has eigenvalues equal to the roots of the polynomial.
-\end{enumerate} 
+\end{enumerate}
  $$A = \begin{bmatrix}
            0    & 1 \\
            -a_0 & -a_1 \\
        \end{bmatrix}$$
-       
+
   \begin{align*}
       det \left(A - \lambda I\right) &= \begin{bmatrix}
                                             0 - \lambda    & 1 \\
