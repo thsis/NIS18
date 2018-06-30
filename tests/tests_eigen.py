@@ -103,7 +103,7 @@ class AlgoTest(object):
 if __name__ == "__main__":
     # Define Flags.
     JOBS = 20
-    MAXITER = (10, 100, 1000, 10000)
+    MAXITER = (10, 100, 1000, 10000, 100000)
     DIMS = range(3, 8)
     ALGOS = {'jacobi': eigen.jacobi,
              'qrm': eigen.qrm,
@@ -122,28 +122,40 @@ if __name__ == "__main__":
 
     # Check progress of previous runs.
     if os.path.exists(data_out):
+        print("Check progress:")
         required = [(algo.__name__, m, dim) for (algo, m, dim) in parameters]
         required = set(required)
 
         progress = pd.read_csv(data_out)
+
         done = []
         for (a, d, m, _) in progress.values:
             if np.isnan(m):
-                param = (a, d, None)
+                param = (a, None, d)
             else:
-                param = (a, d, m)
+                param = (a, int(m), d)
             done.append(param)
         done = set(done)
+        print(len(done))
 
         to_do = required.difference(done)
         parameters = [(ALGOS[a], m, d) for a, m, d in to_do]
+        print("Perform tests on:")
+        print(to_do)
+        print(len(to_do))
 
     for algo, maxiter, dim in tqdm(parameters):
-                algo_test = AlgoTest(filepath=data_out,
-                                     algo=algo,
-                                     dim=dim,
-                                     maxiter=maxiter,
-                                     jobs=JOBS)
-                algo_test.run()
+        if algo is eigen.jacobi:
+            algo_test = AlgoTest(filepath=data_out,
+                                 algo=algo,
+                                 dim=dim,
+                                 jobs=JOBS)
+        else:
+            algo_test = AlgoTest(filepath=data_out,
+                                 algo=algo,
+                                 dim=dim,
+                                 maxiter=maxiter,
+                                 jobs=JOBS)
+        algo_test.run()
 
     algo_test.save()
