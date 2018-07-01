@@ -136,13 +136,9 @@ if __name__ == "__main__":
                 param = (a, int(m), d)
             done.append(param)
         done = set(done)
-        print(len(done))
 
         to_do = required.difference(done)
         parameters = [(ALGOS[a], m, d) for a, m, d in to_do]
-        print("Perform tests on:")
-        print(to_do)
-        print(len(to_do))
 
     for algo, maxiter, dim in tqdm(parameters):
         if algo is eigen.jacobi:
@@ -159,3 +155,14 @@ if __name__ == "__main__":
         algo_test.run()
 
     algo_test.save()
+
+    results = pd.read_csv(data_out)
+    results.head(10)
+    results.loc[results.algorithm == 'jacobi', 'maxiter'] = '-'
+
+    crosstab = pd.crosstab(index=[results.algorithm, results.maxiter],
+                           columns=results.dimension,
+                           values=results.failed,
+                           aggfunc=np.mean,
+                           dropna=True)
+    print(crosstab.to_latex())
