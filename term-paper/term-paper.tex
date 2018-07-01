@@ -165,7 +165,7 @@ The solution to this maximization problem is given by
 S_B S_W S_B v = \lambda v,
 \end{equation}
 
-which again is an eigenvalue problem.
+which again is an eigenvalue problem \cite{duda}.
 
 In the following we will try to extract the eigenvalues of matrices by reformulating any complicated eigenvalue problem into a straightforward one by diagonalizing the matrix in question, without altering the eigenvalues we would like to compute. In section two we provide the mathematical tools, which allow us to do so. We follow these justifications by proposing two main algorithms for computing eigenvalues, first the Jacobi-Method for symmetric matrices, then the QR-Method for arbitrary square matrices in section 3. Additionally, for the QR-Method we define two extensions which try to increase the initial QR-algorithm's speed.
 For all algorithms we provide implementations in the \texttt{Python}-programming-language, all plots have been produced with the \texttt{matplotlib}-module and the custom algorithms rely solely on modules from \texttt{Python}'s \texttt{scipy} environment for scientific computing \cite{python, matplotlib, scipy}. In section 4 we will analyse the implemented routines by critically reflecting upon the accuracy of the obtained results as well as their efficiency. In the final section we provide a final algorithm which combines the strengths of the defined procedures by chosing the algorithm that is most fit for the underlying problem.
