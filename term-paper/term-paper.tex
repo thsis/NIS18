@@ -32,8 +32,9 @@
 \usepackage{algpseudocode}
 \usepackage{algorithm}
 
-\usepackage{cite}
+%\usepackage{cite}
 \usepackage[nottoc,numbib]{tocbibind}
+\usepackage{natbib}
 
 \usepackage{../presentation/colordef}
 \usepackage{../presentation/lvblisting}
@@ -44,8 +45,8 @@
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, arrows}
 
-\tikzstyle{io} = [trapezium, trapezium left angle=70, 
-                  trapezium right angle=110, minimum width=3cm, 
+\tikzstyle{io} = [trapezium, trapezium left angle=70,
+                  trapezium right angle=110, minimum width=3cm,
                   minimum height=0.5cm, text centered,
                   draw=black, fill=blue!30]
 \tikzstyle{process} = [rectangle, minimum width=3cm,
@@ -108,14 +109,14 @@
 
 \begin{singlespacing}
 \begin{abstract}
-\textbf{Abstract} \\
+\centerline{\textbf{Abstract}} \\
 \small
-Eigenvalues and eigenvectors are often the solution to multidimensional optimization problems, however computing them by hand for anything but trivial matrices is most of the time infeasible or inpractical. To this extend we would like to deploy an automated procedure which yields the correct eigenvectors and eigenvalues. We demonstrate the relevance of eigenvalues and eigenvectors by revising two applications from statistics, Principal Component Analysis and Fisher's Linear Discriminant Analysis, which we follow up by investigating four algorithms suited for eigenvalue problems. Finally we provide a compound solution that takes advantage of each algorithms strengths.  
+Eigenvalues and eigenvectors are often the solution to multidimensional optimization problems, however computing them by hand for anything but trivial matrices is most of the time infeasible or inpractical. To this extend we would like to deploy an automated procedure which yields the correct eigenvectors and eigenvalues. We demonstrate the relevance of eigenvalues and eigenvectors by revising two applications from statistics, Principal Component Analysis and Fisher's Linear Discriminant Analysis, which we follow up by investigating four algorithms suited for eigenvalue problems. Finally we provide a compound solution that takes advantage of each algorithms strengths.
 \end{abstract}
 \vspace{3mm}
 \end{singlespacing}
 
-For many statistical applications eigenvectors provide a formidable solution. Be it dimensionality reduction in terms of a Principal Component Analysis or classification by Fisher's Linear Discriminant Analysis, both come in the guise of optimization problems. But what are eigenvalues and eigenvectors? 
+For many statistical applications eigenvectors provide a formidable solution. Be it dimensionality reduction in terms of a Principal Component Analysis or classification by Fisher's Linear Discriminant Analysis, both come in the guise of optimization problems. But what are eigenvalues and eigenvectors?
 
 If $A$ is an $n \times n$ matrix, $v$ is a non-zero vector and $\lambda$ is a scalar, such that
 
@@ -132,13 +133,13 @@ An eigenvalue of A is a root of the characteristic equation,
 det\left(A - \lambda I \right) = 0.
 \end{equation}
 
-Geometrically speaking, we require a vector which, when multiplied by matrix $A$, will not get rotated but only elongated by a factor $\lambda$.
+Each \textit{eigenvalue} is associated with an \textit{eigenvector}. Geometrically speaking, we require a vector which, when multiplied by matrix $A$, will not get rotated but only elongated by the \textit{eigenvalue} $\lambda$ \citep[p. 13]{NME}.
 
-When confronted with a high-dimensional data matrix $X \in \mathbb{R}^{n \times m}$ an analyst often wishes to find a lower-dimensional representation, while conserving as much of the structure as possible. One way of achieving this goal is to choose a standardized linear combination of features that aim to maximize the variance of the projection $\delta^{\prime} X$. We can formalize this as
+When confronted with a high-dimensional data matrix $X \in \mathbb{R}^{n \times m}$ an analyst often wishes to find a lower-dimensional representation, while conserving as much of the data's structure as possible. One way of achieving this goal is to choose a standardized linear combination of features that aim to maximize the variance of the projection $\delta^{\prime} X$. We can formalize this as
 
 \begin{equation}
 	\label{pca_obj}
-    	max\ \delta^{\prime} Var \left(X\right) \delta \; s.t. \; \sum \delta_i^2 = 1.
+    	max\ \delta^{\prime} Var \left(X\right) \delta \;\; s.t. \;\; \sum \delta_i^2 = 1.
 \end{equation}
 
 The solution to this optimization problem is given by
@@ -147,32 +148,30 @@ The solution to this optimization problem is given by
 	Y = \Gamma^{\prime} \left(X - \mu\right)
 \end{equation}
 
-where $Y \in \mathbb{R}^{n \times m}$ is the matrix of rotations, 
+where $Y \in \mathbb{R}^{n \times m}$ is the matrix of rotations,
 	  $\Gamma \in \mathbb{R}^{m \times m}$ is the matrix of eigenvectors,
-	  $\mu \in \mathbb{R}^m$ is the vector of sample means. \cite{MVA}
+	  $\mu \in \mathbb{R}^m$ is the vector of sample means \citep[p. 234]{MVA}.
 
 A second use for Eigenvalues lies in Fisher's Linear Discriminant Analysis for classification problems. In this setting we would like to find the rotation that is best suited to separate the classes. To this effect we try to maximize the between class variance while simoultaneously trying to minimize the within-class variance. This is equivalent to maximizing the so called Rayleigh-coefficient
 
 \begin{equation}
 \label{LDA}
-max J = \frac{J_b(w)}{J_w(w)} = \frac{w \prime S_{b} w}{w \prime S_{w} w}.
+max J = \frac{J_b(w)}{J_w(w)} = \frac{w^{\prime} S_{b} w}{w^{\prime} S_{w} w}.
 \end{equation}
 
-The matrices for between and within class variance are defined as $S_b = \sum_{c=1}^{C}(\mu_c - \mu)(\mu_c - \mu)\prime$ and $S_w = \sum_{c=1}^{C}\sum_{i \in c}(x_i - \mu_c)(x_i - \mu_c)\prime$
-
-The solution to this maximization problem is given by
+The between and within class variance matrices are defined as $S_b = \sum\limits_{c=1}^{C}(\mu_c - \mu)(\mu_c - \mu)^{\prime}$ and $S_w = \sum\limits_{c=1}^{C}\sum\limits_{i \in c}(x_i - \mu_c)(x_i - \mu_c)^{\prime}$. The solution to this maximization problem is given by
 \begin{equation}
-S_B S_W S_B v = \lambda v,
+S_B^{\frac{1}{2}} S_W^{-1} S_B^{\frac{1}{2}} v = \lambda v,
 \end{equation}
 
-which again is an eigenvalue problem \cite{duda}.
+which again is an eigenvalue problem of a square, symmetric matrix and can be readily computed \citep[p. 219]{duda}.
 
 In the following we will try to extract the eigenvalues of matrices by reformulating any complicated eigenvalue problem into a straightforward one by diagonalizing the matrix in question, without altering the eigenvalues we would like to compute. In section two we provide the mathematical tools, which allow us to do so. We follow these justifications by proposing two main algorithms for computing eigenvalues, first the Jacobi-Method for symmetric matrices, then the QR-Method for arbitrary square matrices in section 3. Additionally, for the QR-Method we define two extensions which try to increase the initial QR-algorithm's speed.
-For all algorithms we provide implementations in the \texttt{Python}-programming-language, all plots have been produced with the \texttt{matplotlib}-module and the custom algorithms rely solely on modules from \texttt{Python}'s \texttt{scipy} environment for scientific computing \cite{python, matplotlib, scipy}. In section 4 we will analyse the implemented routines by critically reflecting upon the accuracy of the obtained results as well as their efficiency. In the final section we provide a final algorithm which combines the strengths of the defined procedures by chosing the algorithm that is most fit for the underlying problem.
+For all algorithms we provide implementations in the \texttt{Python}-programming-language, all plots have been produced with the \texttt{matplotlib}-module and the custom algorithms rely solely on modules from \texttt{Python}'s \texttt{scipy} environment for scientific computing \citep{python, matplotlib, scipy}. All scripts are available \href{https://github.com/thsis/NIS18}{online}. In section 4 we will analyse the implemented routines by critically reflecting upon the accuracy of the obtained results as well as their efficiency. In the final section we provide a final algorithm which combines the strengths of the defined procedures by chosing the algorithm that is most fit for the underlying problem.
 % ==============================================================================
 \section{Similarity Transformations}
 
-In general we want to reformulate the eigenvalue problem of a complicated matrix into an eigenvalue problem of a simple matrix, which yields the same eigenvalues. Simple matrices in our case will be diagonal matrices, since with them it is possible to identify their eigenvalues simply as entries on the main diagonal. Such a transformation that conserves the eigenvalues of a matrix is called a \textit{similarity transformation}. 
+In general we want to reformulate the eigenvalue problem of a complicated matrix into an eigenvalue problem of a simple matrix, which yields the same eigenvalues. Simple matrices in our case will be diagonal matrices, since with them it is possible to identify their eigenvalues as entries on the main diagonal. A transformation that conserves the eigenvalues of a matrix is called a \textit{similarity transformation}.
 
 Two $n \times n$ matrices $A$ and $B$ are called \textit{similar} if there exists an invertible matrix $P$ such that
 
@@ -189,10 +188,10 @@ B - \lambda I &= P^{-1} B P - \lambda P^{-1} I P \notag \\
 \end{align*}
 
  Hence $A$ and $B$ have the same eigenvalues. This fact also follows immediately from the transitivity of the similarity relationship and the fact that a matrix is similar to the diagonal matrix formed from its eigenvalues, as stated in the spectral-decomposition. Important types of similarity transformations are based around orthogonal matrices. If $Q$ is orthogonal and
- 
+
 $$ A = Q^{\prime} B Q, $$
 
-$A$ and $B$ are called \textit{orthogonally similar} \cite{NLA}. We will use \textit{orthogonal similarity transformations} to diagonalize matrices we wish to know the eigenvalues of. 
+$A$ and $B$ are called \textit{orthogonally similar} \citep{NLA}. We will use \textit{orthogonal similarity transformations} to diagonalize matrices we wish to know the eigenvalues of. For our custom implementations we will make use of Givens-Rotations and Householder Reflectors (for a detailed discussion consider the appendix).
 
 % ==============================================================================
 \section{Algorithms}
@@ -202,13 +201,29 @@ $A$ and $B$ are called \textit{orthogonally similar} \cite{NLA}. We will use \te
 The \textit{Jacobi-Method} for computing the eigenvalues of a symmetric matrix $A \in \mathbb{R}^{n \times n}$ deploys a sequence of orthogonal similarity transformations that eventually results in
 $$ A = P \Lambda P^{-1} \Leftrightarrow \Lambda = P^{-1} A P,$$
 
-where $\Lambda$ is diagonal and $P$ consists of a sequence of matrix multiplications $P = \prod\limits_{k=1}^{K} V_{p_k, q_k}(\theta_k)$ and $V_{p_k, q_k}(\theta_k)$ is of the form proposed in (\ref{givens-rotation}). More specific the \textit{Jacobi iteration} is
+where $\Lambda$ is diagonal and $P$ consists of a sequence of matrix multiplications $P = \prod\limits_{k=1}^{K} V_{p_k, q_k}(\theta_k)$ and $V_{p_k, q_k}(\theta_k)$ is a matrix that performs a Givens-Rotation. That is, an identity matrix with four of it's elements replaced, such that
+\small
+\begin{equation}
+\label{givens_rotator}
+V_{pq}(\theta) = \begin{bmatrix}
+                      1 \\
+                        & \ddots \\
+                        &        & \cos\theta    &        & \sin\theta  \\
+                        &        &               & \ddots     \\
+                        &        & -\sin\theta   &        & \cos\theta   \\
+                        &        &               &        &            &  \ddots \\
+                        &        &               &        &            &         & 1 \\
+                 \end{bmatrix}
+\end{equation}
+\normalsize
+\newpage
+More specific the \textit{Jacobi iteration} is
 
 \begin{equation}
 A^{(k)} = V^{\prime}_{p_k, q_k}(\theta_k) A^{(k-1)} V_{p_k, q_k}(\theta_k),
 \end{equation}
 
-where $p_k, q_k$ and $\theta_k$ are chosen such that $A^{k}$ resembles more a diagonal matrix than $A^{k-1}$.  Specifically they will be chosen as to reduce the sum of squares of the off-diagonal elements. As we saw in (\ref{givens-rotation}) it is easy to chose an angle $\theta_k$ in order to introduce a zero in a single Givens rotation. Here we use the rotations in the context of a similarity transformation, so it is a little more complicated.
+where $p_k, q_k$ and $\theta_k$ are chosen such that $A^{k}$ resembles more a diagonal matrix than $A^{k-1}$. Specifically they will be chosen as to reduce the sum of squares of the off-diagonal elements. Also, note that $A^{(k)}$ and $A^{(k-1)}$ are similar, since $V^{\prime}_{p_k, q_k}(\theta_k)$ is an orthogonal matrix for every step $k$. The benefit of matrices as in (\ref{givens_rotator}) is, that it is easy to choose an angle $\theta_k$ in order to introduce a zero in a single multiplication step. Here we use the rotations in the context of a similarity transformation, so it is a little more complicated.
 
 We require that $a_{pq}^{(k)} = 0$, this implies
 \begin{equation}
@@ -224,26 +239,26 @@ We can use the trigonometric identities
 in (\ref{theta-troubles}) we have
 $$\tan(2\theta) = \frac{2a^{(k-1)}_{pq}}{a^{(k-1)}_{pp} - a^{(k-1)}_{qq}}.$$
 
-From this we can retrieve the angle and obtain the rotation matrix in each iteration \cite{NLA}.
+From this we can retrieve the angle and obtain the rotation matrix in each iteration \citep{NLA}.
 
 The algorithm converges if the off-diagonal elements are sufficiently small. The best index pair at a given iteration is the pair $(p, q)$ that satisfies
- 
+
 \[
 |a^{(k-1)}_{pq}| = \mathop{\max_{i<j}} |a^{(k-1)}_{ij}|.
 \]
 
-If this choice is made, the Jacobi Method can be shown to converge \cite{NLA}.
+If this choice is made, the Jacobi Method can be shown to converge \citep{NLA}.
 
-\begin{figure}
+\begin{figure}[H]
 \begin{center}
 \caption{\href {https://github.com/thsis/NIS18/tree/master/media/plots}{Progress Jacobi-Method}  \protect\includegraphics[scale=0.05]{qletlogo.pdf}}
-  \label{j-plot}  
+  \label{j-plot}
   \includegraphics[scale=0.6]{../media/plots/jacobi.png}
 \end{center}
 \end{figure}
 
 
-Figure \ref{j-plot} visualizes the progress of the \textit{Jacobi}-method on a symmetric $5 \times 5$ matrix. As we can see, in the first iteration the element $a_43$ is eliminated. In the subsequent operations the \textit{Jacobi}-method continues to eliminate any non-zero entries on the off-diagonal until the algorithm convergences after 10 iterations.
+Figure \ref{j-plot} visualizes the progress of the \textit{Jacobi}-method on a symmetric $5 \times 5$ matrix. As we can see, in the first iteration the element $a_{43}$ is eliminated. In the subsequent operations the \textit{Jacobi}-method continues to eliminate any non-zero entries on the off-diagonal until the algorithm convergences after 10 iterations.
 
 \begin{algorithm}
 \caption{\href {https://github.com/thsis/NIS18/blob/master/algorithms/eigen.py}{\texttt{jacobi}}  \protect\includegraphics[scale=0.05]{qletlogo.pdf}}
@@ -256,9 +271,9 @@ Figure \ref{j-plot} visualizes the progress of the \textit{Jacobi}-method on a s
   \While{$L_{max} > precision$}
     \State Find indices $i$, $j$ of largest value in lower triangle of $abs(L)$
         \State $L_{max} \gets L_{i,j}$
-            \State $\alpha \gets \frac{1}{2}\cdot \arctan(\frac{2A_{i, j}}{A_{i, i}-A_{j, j}})$
+            \State $\theta \gets \frac{1}{2}\cdot \arctan(\frac{2A_{i, j}}{A_{i, i}-A_{j, j}})$
     \State $V \gets I$
-    \State $V_{i, i}, V_{j, j} \gets \cos \alpha$; $V_{i, j}, V_{j, i} \gets -\sin \alpha, \sin \alpha$
+    \State $V_{i, i}, V_{j, j} \gets \cos \theta$; $V_{i, j}, V_{j, i} \gets -\sin \theta,\; \sin \theta$
     \State $A \gets V^{\prime} A V$; $U \gets UV$
 
   \EndWhile\\
@@ -285,7 +300,7 @@ where $Q$ is an orthogonal and $R$ is an upper triangular matrix. Then define th
   A^k = Q_{k-1}^{\prime} A_{k-1} Q_{k-1} = R_{k-1}Q_{k-1}
 \end{equation}
 
-Note hereby that all matrices in the sequence $\{A_k\}$ share the same eigenvalues, since this procedure is a similarity transformation due to $Q$'s orthogonality. Additionally, in an implementation it is usually preferable to compute the \textit{QR}-iteration in the way shown at the rightmost part of equation (\ref{qr-method}) \cite{NME}. Although, mathematically, each statement is exactly identical there is a practical difference in due to computational imperfections and limited machine precision. The reason being that the computation of $Q_{k-1}^{\prime} A_{k-1} Q_{k-1}$ obviously requires two matrix multiplications whereas the result of $R_{k-1}Q_{k-1}$ can be readily obtained by one. When combining multiple steps over a long sequence of \textit{QR} iterations the additional computations lead to additional rounding errors, which can have an influence on the accuracy of the obtained results. Additionally, less computations lead of course to a faster procedure in general. 
+Note hereby that all matrices in the sequence $\{A_k\}$ share the same eigenvalues, since this procedure is a similarity transformation due to $Q$'s orthogonality \citep[p. 121]{NME}. Additionally, for practical applications it is preferable to compute the \textit{QR}-iteration in the way shown at the rightmost part of equation (\ref{qr-method}. Although, mathematically, each statement is exactly identical there is a non-negligible difference due to computational imperfections and limited machine precision. The reason is that the computation of $Q_{k-1}^{\prime} A_{k-1} Q_{k-1}$, obviously, requires two matrix multiplications whereas the result of $R_{k-1}Q_{k-1}$ can be readily obtained by one. When combining multiple steps over a long sequence of \textit{QR} iterations the additional computations lead to additional rounding errors, which can have an influence on the accuracy of the obtained results. Besides, less computations lead of course to a faster procedure in general.
 
 \begin{figure}
 \begin{center}
@@ -295,7 +310,7 @@ Note hereby that all matrices in the sequence $\{A_k\}$ share the same eigenvalu
 \end{center}
 \end{figure}
 
-Figure \ref{qrm1-plot} visualizes the progress of the basic \textit{QR}-method on the same $5 \times 5$ matrix as in Figure \ref{j-plot}. Compared to the \textit{Jacobi}-method it does not explicitly pick a single element that will be eliminated per iteration. Instead, the \textit{QR}-method extracts the eigenvalues by a process that is called "chasing". By that we mean that alternating steps are being performed, which create non-zero eintries in positions $(i+2, i)$, $(i+3, i)$ and $(i+3, i+1)$ and restore them to zero, as the nonzero entries are moved farther down the matrix \cite{NLA}. We can also see that compared to the \textit{Jacobi}-Method, so far, the \textit{QR}-algorithm lacks in speed. Where the \textit{Jacobi}-method was almost done diagonalizing the matrix in iteration 10, the basic \textit{QR}-algorithm still had multiple non-zero entries left. Thus we would like to make minor improvements on the algorithm's efficiency.
+Figure \ref{qrm1-plot} visualizes the progress of the basic \textit{QR}-method on the same $5 \times 5$ matrix as in Figure \ref{j-plot}. Compared to the \textit{Jacobi}-method it does not explicitly pick a single element that will be eliminated per iteration. Instead, the \textit{QR}-method extracts the eigenvalues by a process that is called "chasing". By that we mean that alternating steps are being performed, which create non-zero eintries in positions $(i+2, i)$, $(i+3, i)$ and $(i+3, i+1)$ and restore them to zero, as the nonzero entries are moved farther down the matrix \citep[p. 130]{NLA}. We can also see that compared to the \textit{Jacobi}-Method, so far, the \textit{QR}-algorithm lacks in speed. Where the \textit{Jacobi}-method was almost done diagonalizing the matrix in iteration 10, the basic \textit{QR}-algorithm still had multiple non-zero entries left. Thus we would like to make minor improvements on the algorithm's efficiency.
 \begin{algorithm}
 \caption{\href {https://github.com/thsis/NIS18/blob/master/algorithms/eigen.py}{\texttt{QRM1}}  \protect\includegraphics[scale=0.05]{qletlogo.pdf}}
 \label{qr1-meth}
@@ -317,6 +332,7 @@ Figure \ref{qrm1-plot} visualizes the progress of the basic \textit{QR}-method o
 \subsubsection{Hessenberg Variant}
 
 In order to speed up the \textit{QR}-method it is advisable to transform the matrix to its upper \textit{Hessenberg} form. A matrix $A$ is of upper \textit{Hessenberg} form if it is upper triangular except for the first subdiagonal, which may be non-zero. In particular $a_{ij} = 0\; \forall i > j + 1$:
+\small
 $$
 \begin{bmatrix}
 X & X & X  & \dots &  X & X\\
@@ -326,13 +342,13 @@ X & X & X &  \dots &  X & X\\
 \vdots &  \vdots & & \ddots  & \vdots  & \vdots\\
 0 & 0 & 0 &  \dots &  X & X \\
 \end{bmatrix}$$
+\normalsize
+A matrix can be reduced to \textit{Hessenberg} form in a finite number of similarity transformations using Householder transformations or Givens rotations. For symmetric matrices the transformation into a \textit{Hessenberg}-form results in a tridiagonal matrix. But even for non-symmetric matrices, the \textit{Hessenberg}-form allows a large saving in subsequent computations. After the transformation we can deploy the previously defined \textit{QR}-method \citep[p. 130]{NLA}.
 
-A matrix can be reduced to \textit{Hessenberg} form in a finite number of similarity transformations using Householder transformations or Givens rotations. For symmetric matrices the transformation into a \textit{Hessenberg}-form results in a tridiagonal matrix. But even for non-symmetric matrices, the \textit{Hessenberg}-form allows a large saving in subsequent computations. After the transformation we can deploy the previously defined \textit{QR}-method \cite{NLA}.  
-
-\begin{figure}[b]
+\begin{figure}
 \centering
 \caption{\href {https://github.com/thsis/NIS18/tree/master/media/plots}{Progress Hessenberg-QR-Method}  \protect\includegraphics[scale=0.05]{qletlogo.pdf}}
-  \label{qr2-plot}  
+  \label{qr2-plot}
   \includegraphics[scale=0.6]{../media/plots/qrm2.png}
 \end{figure}
 
@@ -351,7 +367,7 @@ Figure \ref{qr2-plot} visualizes the progress of the \textit{Hessenberg} variant
 
 \subsubsection{Accelerated Variant}
 
-We could already improve the \textit{QR}-method and cut down on computational cost. However, we still cannot match the results of the \textit{Jacobi} method. To this effect we present the final adjustment on the \textit{QR}-method to improve convergence speed. The general idea is, that we deliberately create an additional zero entry on the main diagonal by subtracting a scalar on each element, perform the \textit{QR}-iteration and finally undo the subtraction. In particular, we define
+We could already improve the \textit{QR}-method and cut down on computational cost. However, we still cannot match the results of the \textit{Jacobi} method. To this effect we present one additional adjustment on the \textit{QR}-method that aims to improve convergence speed. The general idea is, that we deliberately create an additional zero entry on the main diagonal by subtracting a scalar on each element, perform the \textit{QR}-iteration and finally undo the subtraction. In particular, we define
 
 \begin{equation}
 \label{qrm3-prop}
@@ -377,12 +393,12 @@ T^{m+1}     &= T^{m} + t _{n, n} I
 After this we can define the accelerated iteration step as
 \begin{align}
 \label{qrm3}
-R_m &= Q^{\prime}_m\left(T_m - \alpha_n^{m}I\right) \\
-T_{m+1} &= Q^{\prime}_m\left(T_m - \alpha_n^{m}I\right)Q_m + \alpha_n^{m}I \\
-        &= Q^{\prime}_m T_m Q_m
+R_m &= Q^{\prime}_m\left((T^m - \alpha_n^{m}I\right) \\
+T^{m+1} &= Q^{\prime}_m\left(T^m - \alpha_n^{m}I\right)Q_m + \alpha_n^{m}I \\
+        &= Q^{\prime}_m T^m Q_m
 \end{align}
 
-Again $T_{m+1}$ is similar to $T_m$. 
+Again $T^{m+1}$ is similar to $T^m$.
 
 \begin{figure}[b]
 \centering
@@ -391,7 +407,7 @@ Again $T_{m+1}$ is similar to $T_m$.
   \includegraphics[scale=0.6]{../media/plots/qrm3.png}
 \end{figure}
 
-Figure \ref{qr3-plot} visualizes the progress of the accelerated \textit{QR}-method. For comparability, the matrix used is the same $5 \times 5$ matrix as before. Most notably is, that the accelerated method still performs worse than the \textit{Jacobi} method. So far results seem similar compared to the \textit{Hessenberg} variant of the \textit{QR}-method. The case can be made that the accelerated method performs considerably better than the basic \textit{QR}-method and slightly better than the \textit{Hessenberg} variant after 10 iterations than the. Howbeit, this claim warrants further analysis. 
+Figure \ref{qr3-plot} visualizes the progress of the accelerated \textit{QR}-method. For comparability, the matrix used is the same $5 \times 5$ matrix as before. Most notably is, that the accelerated method still performs worse than the \textit{Jacobi} method. So far results seem similar compared to the \textit{Hessenberg} variant of the \textit{QR}-method. The case can be made that the accelerated method performs considerably better than the basic \textit{QR}-method and slightly better than the \textit{Hessenberg} variant after 10 iterations. Howbeit, this claim warrants further analysis.
 
 \begin{algorithm}
 \begin{algorithmic}[1]
@@ -422,7 +438,7 @@ If we wish to investigate the accuracy of our algorithms, we first need to defin
 \label{spectral-decomp}
 A = \Gamma \Lambda \Gamma^{\prime} = \sum\limits_{j=1}^m \lambda_j \gamma_j \gamma^{\prime}_j,
 \end{equation}
-where $\Lambda = diag(\lambda_1, \dots, \lambda_m)$ is a diagonal matrix with the eigenvalues of $A$ on its main diagonal and where $\Gamma=(\gamma_1, \dots, \gamma_m)$ is the matrix containing the associated eigenvectors \cite{MVA}. This means we can draw a random vector of eigenvalues $\lambda_{true}$ and a random orthogonal matrix to construct a test matrix $A_{test}$. Once the matrix $A_{test}$ is initialized, we can plug it into the eigenvalue-routine we wish to test.
+where $\Lambda = diag(\lambda_1, \dots, \lambda_m)$ is a diagonal matrix with the eigenvalues of $A$ on its main diagonal and where $\Gamma=(\gamma_1, \dots, \gamma_m)$ is the matrix containing the associated eigenvectors \citep{MVA}. This means we can draw a random vector of eigenvalues $\lambda_{true}$ and a random orthogonal matrix to construct a test matrix $A_{test}$ \citep{MVA}{lapack}. Once the matrix $A_{test}$ is initialized, we can plug it into the eigenvalue-routine we wish to test.
 
 
 \begin{table}
@@ -430,7 +446,7 @@ where $\Lambda = diag(\lambda_1, \dots, \lambda_m)$ is a diagonal matrix with th
 \caption{\href {https://github.com/thsis/NIS18/tree/master/tests/tests_eigen.py}{Failed unit tests accross matrix-sizes}  \protect\includegraphics[scale=0.05]{qletlogo.pdf}}
 \label{acc-res}
 \begin{tabular}{ccrrrrr}
-\toprule       
+\toprule
 Algorithm & Maximum number & \multicolumn{5}{c}{Dimension}\\
 \cline{3-7}
           & of iterations &    3 &    4 &    5 &     6 &     7 \\
@@ -457,7 +473,7 @@ Algorithm & Maximum number & \multicolumn{5}{c}{Dimension}\\
 \end{table}
 
 
-The number of failures out of 1000 unit tests on matrices of different dimensions are catalogued in Table \ref{acc-res}. Most notably, we see that the \textit{Jacobi}-method outperforms any of the \textit{QR}-methods in terms of accuracy. This is mostly due to its convergence criterion being defined differently than the convergence criterion of the \textit{QR}-methods. Simply put, the \textit{Jacobi}-method will always converge in this setup. Also keep in mind, that since the \textit{Jacobi}-method is only allowed for symmetric matrices, it essentially eliminates two non-zero off-diagonal elements at once. Comparing only the \textit{QR}-methods amongst each other one can clearly see, that the quality of the obtained results increases, the more willing an analyst is to wait. Convergence is slower for the \textit{QR}-methods and a premature stop leads to poor eigenvalues. One the other hand, if the \textit{QR}-methods converge, they unanimously pass all tests. It would therefore be possible to always achieve an arbitrary grade of precision by setting the maximum number of iterations to infinity.
+The number of failures out of 1000 unit tests on matrices of different dimensions are catalogued in Table \ref{acc-res}. Most notably, we see that the \textit{Jacobi}-method outperforms any of the \textit{QR}-methods in terms of accuracy. This is mostly due to its convergence criterion being defined differently than the convergence criterion of the \textit{QR}-methods. Simply put, the \textit{Jacobi}-method will always converge in this setup. Also keep in mind, that since the \textit{Jacobi}-method is only allowed for symmetric matrices, it essentially eliminates two non-zero off-diagonal elements at once. Comparing only the \textit{QR}-methods amongst each other one can clearly see, that the quality of the obtained results increases, the more willing an analyst is to wait. Convergence is slower for the \textit{QR}-methods and a premature stop leads to poor eigenvalues. One the other hand, if the \textit{QR}-methods converge, they unanimously pass all tests. It would therefore be possible to always achieve an arbitrary grade of precision by allowing for a higher number of iterations. For the highest possible accuracy one can set the maximum number of iterations to infinity.
 
 % ------------------------------------------------------------------------------
 \subsection{Efficiency}
@@ -467,16 +483,16 @@ The number of failures out of 1000 unit tests on matrices of different dimension
 \centering
 \caption{\href {https://github.com/thsis/NIS18/blob/master/tests/tests_eigen.py}{Unit-tests: Iterations}  \protect\includegraphics[scale=0.05]{qletlogo.pdf}}
   \label{algo_efficiency}
-  \includegraphics[width=\textwidth, height=5cm]{../media/plots/iterations_boxplot.png}
+  \includegraphics[width=\textwidth, height=6.5cm]{../media/plots/iterations_boxplot.png}
 \end{figure}
 
-Now that we can be confident that each of the routines is able to offer accurate results we are interested in which method is most appropriate for which kind of matrix. Especially, we are interested in convergence speed. Figure \ref{algo_efficiency} shows the distribution of steps performed before the algorithms reached convergence or their maximum allowed number of iterations. Again, the \textit{Jacobi}-method outperforms every \textit{QR}-method. For matrices of small dimensions, i.e. eleven or less, the accelerated \textit{QR}-method outperforms the other \textit{QR}-methods. However, for larger matrices the \textit{Hessenberg} variant seems to be slightly more appropriate, since the accelerated method tends to have a wider range of needed steps. Additionally, the accelerated method's distribution has a wider tail whenever the dimension of the test matrices is larger than eleven. This means that high waiting times, operating on the same matrix, are more likely to occur using the \textit{accelerated} variant compared to the \textit{Hessenberg} variant or even the basic variant. Surprisingly, there seems to be no striking difference between the distributions of the basic and the \textit{Hessenberg} variants. Looking closely, the only effect of performing a \textit{Hessenberg} transformation prior to running a \textit{QR}-algorithm on a test matrix is to mitigate outliers in terms of computation steps needed before convergence. And even that is true, only for large matrices. On the other hand, it does not seem to incurr systematically higher costs.  
+Now that we can be confident that each of the routines is able to offer accurate results we are interested in which method is most appropriate for which kind of matrix. Especially, we are interested in convergence speed. Figure \ref{algo_efficiency} shows the distribution of steps performed before the algorithms reached convergence or their maximum allowed number of iterations. Again, the \textit{Jacobi}-method outperforms every \textit{QR}-method. For matrices of small dimensions, i.e. eleven or less, the accelerated \textit{QR}-method outperforms the other \textit{QR}-methods. However, for larger matrices the \textit{Hessenberg} variant seems to be slightly more appropriate, since the accelerated method tends to have a wider range of needed steps. Additionally, the accelerated method's distribution has a wider tail whenever the dimension of the test matrices is larger than eleven. This means that high waiting times, operating on the same matrix, are more likely to occur using the \textit{accelerated} variant compared to the \textit{Hessenberg} variant or even the basic variant. This can only mean that the supplementary additions and subtractions of the accelerated method provide a questionable aid. In some cases they do seem to help for small matrices, however when confronted with larger matrices the cost of the additions and subtractions outweighs the benefit of the facilitated \textit{QR}-step. Surprisingly, there seems to be no striking difference between the distributions of the basic and the \textit{Hessenberg} variants. Looking closely, the only effect of performing a \textit{Hessenberg} transformation prior to running a \textit{QR}-algorithm on a test matrix is to mitigate outliers in terms of computation steps needed before convergence. And even that is true, only for large matrices. This can only mean that the cost of computing the \textit{Hessenberg}-form of the matrix is roughly as high as the reduction of steps needed before convergence is reached.
 
 % ==============================================================================
 \section{Conclusion}
 \begin{figure}
 \centering
-\caption{\href {https://github.com/thsis/NIS18/tree/master/algorithms/eigen.py}{Decision process of final eigenvalue routine}  \protect\includegraphics[scale=0.05]{qletlogo.pdf}}
+\caption{\href {https://github.com/thsis/NIS18/tree/master/algorithms/eigen.py}{Decision process of the final eigenvalue routine}  \protect\includegraphics[scale=0.05]{qletlogo.pdf}}
 \begin{tikzpicture}
 \node (in1) [io] {Input: matrix A};
 \node (dec_sym) [decision, below of=in1, yshift=-0.25cm] {Is A symmetric?};
@@ -493,19 +509,22 @@ Now that we can be confident that each of the routines is able to offer accurate
 \end{tikzpicture}
 \end{figure}
 
-We have demonstrated the practical importance of eigenvalues in the context of Principal Component Analysis and Fisher's Linear Discriminant Analysis. For computing the Eigenvalues we have shown various numerical procedures. We examinated the \textit{Jacobi}- and the \textit{QR}-method, as well as a selection of simple improvements towards the basic \textit{QR}-method. Finally, we would like to present a compound solution which combines the strengths of all presented algorithms and automatically picks the procedure that fits best to the problem. For obvious reasons, it is best to chose the \textit{Jacobi}-method, whenever applicable. That is, when the input-matrix is symmetric. Whenever the matrix is not symmetric, a second decision based on the matrix' size will determine which \textit{QR}-method will be used. If the matrix' dimension is smaller than eleven it will chose the accelerated \textit{QR} method. Otherwise, the \textit{Hessenberg} variant of the \textit{QR}-method will be deployed. 
+Finally, we would like to present a compound solution which combines the strengths of all presented algorithms and automatically picks the procedure that fits best to the problem. For obvious reasons, it is best to chose the \textit{Jacobi}-method, whenever applicable. That is, when the input-matrix is symmetric. Whenever the matrix is not symmetric, a second decision based on the matrix' size will determine which \textit{QR}-method will be used. If the matrix' dimension is smaller than eleven it will chose the accelerated \textit{QR} method. Otherwise, the \textit{Hessenberg} variant of the \textit{QR}-method will be deployed.
+
+We have thus demonstrated the practical importance of eigenvalues in the context of Principal Component Analysis and Fisher's Linear Discriminant Analysis. For computing the eigenvalues we have shown various numerical procedures. We examinated the \textit{Jacobi}- and the \textit{QR}-method, as well as a selection of simple improvements towards the basic \textit{QR}-method. We have shown that the implemented routines can achieve an arbitrary grade of precision and provided a guided procedure for when to use which of the provided algorithms.
+
 
 % ==============================================================================
 \newpage
 \section{Appendix}
 \subsection{Householder-Reflections}
 
-Our goal is still to diagonalize a matrix in order to programmatically extract its eigenvalues. So far we have seen that there exist such transformations that conserve the eigenvalues of a given matrix. However, we require transformations that, additionally, eliminate non-zero entries on the off-diagonal elements of said matrix. A greedy technique, that eliminates all but the first elements of a vector is proposed in the form of Householder-Reflections.
+Our goal is to diagonalize a matrix in order to programmatically extract its eigenvalues. In section 2 we have seen that there exist such transformations that conserve the eigenvalues of a given matrix. However, we require transformations that, additionally, eliminate non-zero entries on the off-diagonal elements of a particular matrix. A greedy technique, that eliminates all but the first elements of a vector is proposed in the form of Householder-Reflections.
 
 Let $u$ and $v$ be orthonormal vectors and let $x$ be a vector in the space spanned by $u$ and $v$, such that
-$$x = c_1 u + c_2 + v$$ 
-for some scalars $c_1$ and $c_2$. The vector 
-$$\tilde{x}=-c_1 u + c_2 v$$ 
+$$x = c_1 u + c_2 + v$$
+for some scalars $c_1$ and $c_2$. The vector
+$$\tilde{x}=-c_1 u + c_2 v$$
 is a \textit{reflection} of x through the line difined by the vector u. Now consider the matrix
 
 \begin{equation}
@@ -531,7 +550,7 @@ If $Qx = \hat{x}$, then $||x||_2 = ||\hat{x}||_2$ and thus $\hat{x_1} = \pm ||x|
 \label{house-con}
 v = (x_1 + sign(x_1)||x||_2, x2, \dots, x_n)
 \end{equation}
-and $u = \frac{v}{||v||_2}$ \cite{NLA}. We use the $sign$-function, which simply returns the sign of its argument in order to avoid the numerical problem known as \textit{catastrophic cancellation}. It can occur when adding two very close, but different, floating point numbers of differing signs. In some unfortunate cases both of these numbers get represented by the same computer number and, because of their opposing signs cancel each other out. In our case this would mean, that we reflect the vector onto the origin. Fortunately, by making use of the \textit{sign} function we can make sure that both summands will share the same sign, thus mitigating any concerns about catastrophic cancellation.
+and $u = \frac{v}{||v||_2}$ \citep{NLA}. We use the $sign$-function, which simply returns the sign of its argument in order to avoid the numerical problem known as \textit{catastrophic cancellation}. It can occur when adding two very close, but different, floating point numbers of differing signs. In some unfortunate cases both of these numbers get represented by the same computer number and, because of their opposing signs cancel each other out. In our case this would mean, that we reflect the vector onto the origin. Fortunately, by making use of the \textit{sign} function we can make sure that both summands will share the same sign, thus mitigating any concerns about catastrophic cancellation.
 
 We use reflectors to compute the so called $QR$ factorization of an aribitrary square matrix $A \in \mathbb{R}^{n \times n}$.
 
@@ -540,7 +559,8 @@ We use reflectors to compute the so called $QR$ factorization of an aribitrary s
 A = QR
 \end{equation}
 
-where $Q$ is orthogonal and $R$ is upper triangular. We use Householder transformations to reflect the $i^{th}$ column and produce zeros below the $(i, i)$ element. The QR-factorization of a matrix $A \in \mathbb{R}^5$ would therefore consist of five Householder-reflections with $Q=P_5 P_4 P_3 P_2 P_1$. The number of computations for the \textit{QR} factorization in this fashion is $2n^3 / 3$ multiplications and $2n^3 / 3$ additions \cite{NLA}.  
+where $Q$ is orthogonal and $R$ is upper triangular. We use Householder transformations to reflect the $i^{th}$ column and produce zeros below the $(i, i)$ element. The QR-factorization of a matrix $A \in \mathbb{R}^5$ would therefore consist of five Householder-reflections with $Q=P_5 P_4 P_3 P_2 P_1$. The number of computations for the \textit{QR} factorization in this fashion is $2n^3 / 3$ multiplications and $2n^3 / 3$ additions \citep[p. 110]{NLA}.
+\newpage
 % ------------------------------------------------------------------------------
 \subsection{Givens-Rotations}
 
@@ -554,7 +574,7 @@ Another way of forming the \textit{QR}-factorization is by using orthogonal tran
 
 Using orthogonal transformations we can also rotate a vector in such a way that a specified element becomes 0 and only one other element in the vector is changed. The basic idea can be seen in a two-dimensional space. We wish to rotate the vector $x = (x_1, x_2)$ to $\tilde{x} = (\tilde{x_1}, 0)$ as with a reflector.
 
-It is easy to see that the orthogonal matrix 
+It is easy to see that the orthogonal matrix
 $$Q=\begin{bmatrix}
 \cos\theta & \sin\theta \\
 -\sin\theta & \cos\theta
@@ -563,6 +583,7 @@ $$Q=\begin{bmatrix}
 performs the desired rotation, if $\cos\theta = \frac{x_1}{||x||_2}$ and $\sin\theta = \frac{x_2}{||x||_2}$
 
 In general, we can construct an orthogonal $matrix V_{pq}$, that will transform the vector $$x = (x_1,\dots, x_p, \dots x_q, \dots, x_n)$$ to $$\tilde{x} = (x_1,\dots, \tilde{x}_p, \dots 0, \dots, x_n)$$. The matrix that does this is
+\scriptsize
 \begin{equation}
 \label{givens-rotation}
 V_{pq}(\theta) = \begin{bmatrix}
@@ -572,13 +593,14 @@ V_{pq}(\theta) = \begin{bmatrix}
                         &        &               & \ddots     \\
                         &        & -\sin\theta   &        & \cos\theta   \\
                         &        &               &        &            &  \ddots \\
-                        &        &               &        &            &         & 1 \\                      
+                        &        &               &        &            &         & 1 \\
                  \end{bmatrix}
 \end{equation}
+\normalsize
 	where $\cos\theta = \frac{x_p}{||x||}$ and $\sin\theta = \frac{x_q}{||x||}.$
-	
-A rotation matrix is therefore the same as an identitiy matrix, in which we change four elements \cite{NME}. We will use Givens rotations primarily in the Jacobi-Method.
 
+A rotation matrix is therefore the same as an identitiy matrix, in which we change four elements \citep[p. 105]{NME}. We will use Givens rotations primarily in the Jacobi-Method.
+\newpage
 
 \subsection{Eigenvalue Routines}
   \lstinputlisting[language=Python]{../algorithms/helpers.py}
@@ -586,7 +608,7 @@ A rotation matrix is therefore the same as an identitiy matrix, in which we chan
   \newpage
 \subsection{Analysis: Figures}
   \lstinputlisting[language=Python]{../analysis/analysis.py}
-  \newpage    
+  \newpage
 \subsection{Analysis: Unit tests}
   \lstinputlisting[language=Python]{../tests/tests_eigen.py}
   \newpage
