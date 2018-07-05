@@ -2,6 +2,8 @@
 
 This is a project repository for the Humboldt-University course Numerical Introductory Seminar, where we demonstrate different algorithms which solve eigenvalue problems on symmetric, positive definite matrices.
 
+Eigenvalues and eigenvectors are often the solution to multidimensional optimization problems, however computing them by hand for anything but trivial matrices is most of the time infeasible or inpractical. To this extend we would like to deploy an automated procedure which yields the correct eigenvectors and eigenvalues. We demonstrate the relevance of eigenvalues and eigenvectors by revising two applications from statistics, Principal Component Analysis and Fisher's Linear Discriminant Analysis, which we follow up by investigating four algorithms suited for eigenvalue problems. Finally we provide a compound solution that takes advantage of each algorithms strengths.
+
 * In the `algorithms` directory you will find the implemented algorithms:
     + Jacobi-Method.
     + 3 Variants of the QR-Method.
@@ -109,6 +111,20 @@ Eigenvalues and Eigenvectors using the QR-Method.
 * Returns:
     + Eigenvalues of A.
     + Eigenvectors of A.
+
+
+<h2 id="algorithms.eigen.eigen">eigen</h2>
+
+```python
+eigen(X)
+```
+Compute eigenvalues and eigenvectors of X.
+* Parameters:
+    + X: square numpy ndarray.
+* Returns:
+    + Eigenvalues of A.
+    + Eigenvectors of A.
+
 
 <h1 id="algorithms.helpers">algorithms.helpers</h1>
 

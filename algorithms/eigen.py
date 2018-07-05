@@ -183,3 +183,28 @@ def qrm3(X, maxiter=15000, debug=False):
     Evals = T.diagonal()
     order = np.abs(Evals).argsort()[::-1]
     return Evals[order], Q[order, :]
+
+
+def eigen(X):
+    """
+    Compute eigenvalues and eigenvectors of X.
+
+    Parameters:
+        - X: square numpy ndarray.
+    Returns:
+        - Eigenvalues of A.
+        - Eigenvectors of A.
+
+    """
+
+    symmetric = np.alltrue(np.isclose(X - X.T, np.zeros(n)))
+    small = max(X.shape) <= 11
+
+    if symmetric:
+        return jacobi(X)
+    elif small:
+        maxiter = 10 ** max(*X.shape, 4)
+        return qrm3(X, maxiter=maxiter)
+    else:
+        maxiter = 10 ** max(*X.shape, 4)
+        return qrm2(X, maxiter=maxiter)
