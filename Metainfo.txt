@@ -1,0 +1,11 @@
+Name of Quantlet: Numerical Introductory Seminar 2018: Eigenvalues
+
+Published in: https://github.com/thsis/NIS18
+
+Description: Numerical methods for extracting eigenvalues of real-valued matrices
+
+Keywords: eigenvalues eigenvectors qr-method jacobi
+
+Author: Thomas Siskos
+
+Submitted:  12.07.2018
